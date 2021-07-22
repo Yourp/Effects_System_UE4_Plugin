@@ -1,0 +1,19 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{ED6C2639-40A1-2911-FEF3-15AB0C1D6843}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "FightSimulation",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"AIModule",
+				"CoreUObject",
+				"EffectsSystem"
+			]
+		}
+	]
+}
