@@ -116,8 +116,6 @@ public:
     FORCEINLINE void operator -= (float Val)       {        Value -= Val; }
     FORCEINLINE void operator /= (float Val)       {        Value /= Val; }
     FORCEINLINE void operator += (float Val)       {        Value += Val; }
-
-    friend USpellCastManagerComponent;
 };
 
 

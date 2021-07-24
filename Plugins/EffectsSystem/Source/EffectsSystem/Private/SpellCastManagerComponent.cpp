@@ -42,7 +42,7 @@ void USpellCastManagerComponent::BeginPlay()
 
     for (auto& Stat : AllFloatParameters)
     {
-        if (Stat->ParameterName.IsValid())
+        if (Stat->GetGameplayTag().IsValid())
         {
             AllParametersWithTags.Add(Stat);
         }
@@ -79,7 +79,7 @@ FFloatParameter* USpellCastManagerComponent::FindFirstParameterByTag(FGameplayTa
 {
     for (auto& Param : AllParametersWithTags)
     {
-        if (Param->ParameterName.MatchesTag(Tag))
+        if (Param->GetGameplayTag().MatchesTag(Tag))
         {
             return Param;
         }
@@ -92,7 +92,7 @@ void USpellCastManagerComponent::GetAllParametersByTag(TArray<FFloatParameter*>&
 {
     for (auto& Param : AllParametersWithTags)
     {
-        if (Param->ParameterName.MatchesTag(Tag))
+        if (Param->GetGameplayTag().MatchesTag(Tag))
         {
             ParamList.Add(Param);
         }
@@ -103,7 +103,7 @@ void USpellCastManagerComponent::GetAllParametersByTagContainer(TArray<FFloatPar
 {
     for (auto& Param : AllParametersWithTags)
     {
-        if (Param->ParameterName.MatchesAny(Tag))
+        if (Param->GetGameplayTag().MatchesAny(Tag))
         {
             ParamList.Add(Param);
         }
