@@ -13,5 +13,4 @@ void UFightManagerComponent::BeginPlay()
     Super::BeginPlay();
 
     ApplyEffect(this, TestEff);
-    
 }

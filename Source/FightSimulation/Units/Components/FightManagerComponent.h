@@ -17,6 +17,8 @@ class FIGHTSIMULATION_API UFightManagerComponent : public USpellCastManagerCompo
 
     virtual void InitializeFloatParameters() override;
 
+    DECLARE_FLOAT_PARAMETER_FULL(Health);
+
 public:
 
     UPROPERTY(EditAnywhere)
@@ -24,60 +26,5 @@ public:
 
     virtual void BeginPlay() override;
 
-private:
-
-    UPROPERTY(EditAnywhere)
-    FFloatParameter Health;
-
-public:
-
-    FORCEINLINE float GetHealth() const
-    {
-        return Health.GetValue();
-    }
-
-    FORCEINLINE float GetHealthBase() const
-    {
-        return Health.GetBaseValue();
-    }
-
-    FORCEINLINE float GetHealthAdding() const
-    {
-        return Health.GetAdding();
-    }
-
-    FORCEINLINE float GetHealthMultiplying() const
-    {
-        return Health.GetMultiplying();
-    }
-
-    FORCEINLINE const FGameplayTag& GetHealthGameplayTag() const
-    {
-        return Health.GetGameplayTag();
-    }
-
-//     FORCEINLINE FFloatParameter::FAfterChange& GetHealthChangeDelegate()
-//     {
-//         return Health.GetAfterChangeDelegate();
-//     }
-
-    FORCEINLINE void SetHealth(float NewHealthValue)
-    {
-        Health.SetValue(NewHealthValue);
-    }
-
-    FORCEINLINE void SetHealthBase(float NewHealthValue)
-    {
-        Health.SetBaseValue(NewHealthValue);
-    }
-
-//     FORCEINLINE void MultiplyHealthInstant(float Rate)
-//     {
-//         Health.MultiplyInstant(Rate);
-//     }
-// 
-//     FORCEINLINE void ModifyHealthInstant(float Amount)
-//     {
-//         Health.ModifyInstant(Amount);
-//     }
+    
 };
