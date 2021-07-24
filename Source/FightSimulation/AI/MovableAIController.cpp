@@ -3,7 +3,7 @@
 
 #include "MovableAIController.h"
 #include "FightSimulation/Units/UnitCharacterBase.h"
-#include "../Targets/TargetFinder.h"
+#include "TargetFinder.h"
 #include "Kismet/GameplayStatics.h"
 
 

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "../Targets/TargetFinder.h"
+#include "TargetFinder.h"
 #include "Fighter.h"
 #include "UnitCharacterBase.generated.h"
 

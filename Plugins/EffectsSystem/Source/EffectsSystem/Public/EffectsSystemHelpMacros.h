@@ -4,7 +4,7 @@
 RegisterFloatParameter(&VarName);           \
 VarName.Initialize();                       \
 
-#define DECLARE_GETTER_AND_SETTER_OF_FLOAT_PARAMETER(VarName)                   \
+#define DECLARE_GETTERS_AND_SETTERS_OF_FLOAT_PARAMETER(VarName)                   \
 public:                                                                         \
 FORCEINLINE float Get##VarName() const                                          \
 {                                                                               \
@@ -26,7 +26,7 @@ FORCEINLINE const FGameplayTag& Get##VarName##GameplayTag() const               
 {                                                                               \
     return VarName.GetGameplayTag();                                            \
 }                                                                               \
-FORCEINLINE FFloatParameter::FAfterChange& Get##VarName##ChangeDelegate() const \
+FORCEINLINE FFloatParameter::FAfterChange& Get##VarName##ChangeDelegate()       \
 {                                                                               \
     return VarName.GetAfterChangeDelegate();                                    \
 }                                                                               \
@@ -48,9 +48,5 @@ FORCEINLINE void Modify##VarName##Instant(float Amount)                         
 }                                                                               \
 
 
-#define DECLARE_FLOAT_PARAMETER_FULL(VarName)           \
-private:                                                \
-UPROPERTY(EditAnywhere)                                 \
-FFloatParameter VarName;                                \
-DECLARE_GETTER_AND_SETTER_OF_FLOAT_PARAMETER(VarName)   \
+
 

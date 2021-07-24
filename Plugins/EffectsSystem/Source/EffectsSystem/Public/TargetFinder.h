@@ -16,7 +16,7 @@ class UTargetFinder : public UInterface
 /**
  * 
  */
-class FIGHTSIMULATION_API ITargetFinder
+class EFFECTSSYSTEM_API ITargetFinder
 {
 	GENERATED_BODY()
 

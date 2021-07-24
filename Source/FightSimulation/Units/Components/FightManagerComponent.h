@@ -15,9 +15,11 @@ class FIGHTSIMULATION_API UFightManagerComponent : public USpellCastManagerCompo
 {
     GENERATED_BODY()
 
+    DECLARE_GETTERS_AND_SETTERS_OF_FLOAT_PARAMETER(Health);
+
     virtual void InitializeFloatParameters() override;
 
-    DECLARE_FLOAT_PARAMETER_FULL(Health);
+    
 
 public:
 
@@ -25,6 +27,11 @@ public:
     TSubclassOf<USpellEffect> TestEff;
 
     virtual void BeginPlay() override;
+
+private:
+
+    UPROPERTY(EditAnywhere)
+    FFloatParameter Health;
 
     
 };
