@@ -3,6 +3,14 @@
 
 #include "SpellBase.h"
 
+bool USpellBase::IsTimerPending(FTimerHandle const& Timer) const
+{
+    UWorld* World = GetWorld();
+    check(World);
+
+    return !World->GetTimerManager().IsTimerPending(Timer);
+}
+
 void USpellBase::CooldownExpired()
 {
     OnCooldownExpiredDelegate.Broadcast(this);
@@ -10,10 +18,12 @@ void USpellBase::CooldownExpired()
 
 bool USpellBase::IsHasCooldown() const
 {
-    UWorld* World = GetWorld();
-    check(World);
+    return !IsTimerPending(Cooldown);
+}
 
-    return !World->GetTimerManager().IsTimerPending(Cooldown);
+bool USpellBase::IsInCastDelay() const
+{
+    return !IsTimerPending(CastDelay);
 }
 
 void USpellBase::SetCooldown(float NewCooldown)
@@ -31,3 +41,15 @@ float USpellBase::GetCooldownTime() const
 
     return World->GetTimerManager().GetTimerRemaining(Cooldown);
 }
+
+bool USpellBase::IsCanCast() const
+{
+    return true;
+}
+
+void USpellBase::SetOwner(USpellCastManagerComponent* NewOwner)
+{
+    Owner = NewOwner;
+}
+
+

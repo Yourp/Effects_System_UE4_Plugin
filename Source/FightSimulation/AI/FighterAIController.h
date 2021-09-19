@@ -20,19 +20,12 @@ private:
 
     IFighter* Fighter;
 
-    virtual void InitializeFighter();
-    virtual bool CheckAttackConditions() const;
-    virtual bool CheckRangeConditions() const;
-
 
 protected:
 
-    virtual void SetTarget(AActor* NewTarget) override;
 
 public:
 
-    virtual void AttackTarget();
-    virtual void TryAttackTarget();
 
     virtual void BeginPlay() override;
 };

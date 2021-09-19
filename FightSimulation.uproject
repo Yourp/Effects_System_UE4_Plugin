@@ -15,5 +15,11 @@
 				"EffectsSystem"
 			]
 		}
+	],
+	"Plugins": [
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
+		}
 	]
 }

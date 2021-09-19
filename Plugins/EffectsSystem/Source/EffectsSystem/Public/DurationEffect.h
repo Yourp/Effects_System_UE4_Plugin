@@ -23,8 +23,8 @@ public:
 
     FORCEINLINE virtual bool IsPermanent() const { return false; }
 
-    virtual void AddAllParametersTo  (TArray<FFloatParameter *>& Params) override;
-    virtual void RemoveParametersFrom(TArray<FFloatParameter *>& Params) override;
+    virtual void RegisteringAllParameters  (USpellCastManagerComponent* ParamsOwner) override;
+    virtual void UnregisteringAllParameters(USpellCastManagerComponent* ParamsOwner) override;
 
 protected:
 

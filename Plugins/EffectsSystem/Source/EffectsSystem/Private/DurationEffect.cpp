@@ -13,20 +13,16 @@ void UDurationEffect::PostEditChangeProperty(FPropertyChangedEvent& PropertyChan
     }
 }
 
-void UDurationEffect::AddAllParametersTo(TArray<FFloatParameter*>& Params)
+void UDurationEffect::RegisteringAllParameters(USpellCastManagerComponent* ParamsOwner)
 {
-    Super::AddAllParametersTo(Params);
-
-    if (Duration.GetGameplayTag().IsValid())
-    {
-        Params.Add(&Duration);
-    }
+    Super::RegisteringAllParameters(ParamsOwner);
+    ParamsOwner->RegisterFloatParameter(&Duration);
 }
 
-void UDurationEffect::RemoveParametersFrom(TArray<FFloatParameter*>& Params)
+void UDurationEffect::UnregisteringAllParameters(USpellCastManagerComponent* ParamsOwner)
 {
-    Super::RemoveParametersFrom(Params);
-    Params.RemoveSwap(&Duration);
+    Super::UnregisteringAllParameters(ParamsOwner);
+    ParamsOwner->UnregisterFloatParameter(&Duration);
 }
 
 void UDurationEffect::BeginPlay(UWorld* World)

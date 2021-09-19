@@ -2,6 +2,7 @@
 
 
 #include "ReplicatedObject.h"
+#include "StaticHelper.h"
 
 bool UReplicatedObject::IsSupportedForNetworking() const
 {
@@ -31,19 +32,7 @@ void UReplicatedObject::PostInitProperties()
 {
     Super::PostInitProperties();
 
-    UObject* CurrentOuter = GetOuter();
-
-    while (CurrentOuter)
-    {
-        MyActorOuter = Cast<AActor>(CurrentOuter);
-
-        if (MyActorOuter != nullptr)
-        {
-            break;
-        }
-
-        CurrentOuter = CurrentOuter->GetOuter();
-    }
+    MyActorOuter = FStaticHelper::FindFirstOuterByClass<AActor>(this);
 
     if (MyActorOuter != nullptr)
     {

@@ -79,23 +79,16 @@ void UPermanentEffect::BeginPlay(UWorld* World)
     }
 }
 
-void UPermanentEffect::AddAllParametersTo(TArray<FFloatParameter*>& Params)
+void UPermanentEffect::RegisteringAllParameters(USpellCastManagerComponent* ParamsOwner)
 {
-    if (Modifier.GetGameplayTag().IsValid())
-    {
-        Params.Add(&Modifier);
-    }
-
-    if (Period.GetGameplayTag().IsValid())
-    {
-        Params.Add(&Period);
-    }
+    ParamsOwner->RegisterFloatParameter(&Modifier);
+    ParamsOwner->RegisterFloatParameter(&Period);
 }
 
-void UPermanentEffect::RemoveParametersFrom(TArray<FFloatParameter*>& Params)
+void UPermanentEffect::UnregisteringAllParameters(USpellCastManagerComponent* ParamsOwner)
 {
-    Params.RemoveSwap(&Modifier);
-    Params.RemoveSwap(&Period);
+    ParamsOwner->UnregisterFloatParameter(&Modifier);
+    ParamsOwner->UnregisterFloatParameter(&Period);
 }
 
 void UPermanentEffect::Apply(USpellCastManagerComponent* EffectCaster, USpellCastManagerComponent* EffectTarget)
@@ -109,8 +102,8 @@ void UPermanentEffect::Remove()
     check(Owner);
     check(Caster);
 
-    Owner->RemoveAllTagParametersOf(this);
     Owner->UnregisteringAppliedEffect(this);
+    UnregisteringAllParameters(Owner);
 
     for (auto& Parameter : Owner->GetAllParametersWithTags())
     {
@@ -132,5 +125,5 @@ void UPermanentEffect::ApplyTemporarily(USpellCastManagerComponent* EffectCaster
     Super::Apply(EffectCaster, EffectTarget);
 
     EffectTarget->RegisteringAppliedEffect(this);
-    EffectTarget->TakeAllTagParametersFrom(this);
+    RegisteringAllParameters(EffectTarget);
 }

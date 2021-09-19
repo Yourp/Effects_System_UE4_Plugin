@@ -10,6 +10,7 @@
 class USpellEffect;
 class UPermanentEffect;
 class USpellCastManagerComponent;
+class USpellBase;
 struct FFloatParameter;
 struct FGameplayTag;
 struct FGameplayTagContainer;
@@ -56,11 +57,15 @@ public:
     void GetAllParametersByTag         (TArray<FFloatParameter*>& ParamList, FGameplayTag          const& Tag);
     void GetAllParametersByTagContainer(TArray<FFloatParameter*>& ParamList, FGameplayTagContainer const& Tag);
 
-    void TakeAllTagParametersFrom(UPermanentEffect* Effect);
-    void RemoveAllTagParametersOf(UPermanentEffect* Effect);
-
     void RegisteringAppliedEffect  (UPermanentEffect* Effect);
     void UnregisteringAppliedEffect(UPermanentEffect* Effect);
+
+    void RegisterFloatParameter  (FFloatParameter* NewParamPtr);
+    void UnregisterFloatParameter(FFloatParameter* NewParamPtr);
+
+    virtual void TryCastSpell(USpellBase* Spell, USpellCastManagerComponent* Target);
+
+    virtual bool IsCanCastSpell() const;
 
     TArray<FFloatParameter*> const& GetAllParametersWithTags() const;
 
@@ -70,7 +75,7 @@ protected:
 
     
 
-    void RegisterFloatParameter(FFloatParameter* NewParamPtr);
+    
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -81,6 +86,7 @@ private:
 
     TArray<FFloatParameter*> AllParametersWithTags;
 
+    UPROPERTY()
     TArray<UPermanentEffect*> AppliedEffects;
 
     virtual void InitializeFloatParameters() {}

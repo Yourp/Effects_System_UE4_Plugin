@@ -4,7 +4,7 @@
 RegisterFloatParameter(&VarName);           \
 VarName.Initialize();                       \
 
-#define DECLARE_GETTERS_AND_SETTERS_OF_FLOAT_PARAMETER(VarName)                   \
+#define DECLARE_GETTERS_AND_SETTERS_OF_FLOAT_PARAMETER(VarName)                 \
 public:                                                                         \
 FORCEINLINE float Get##VarName() const                                          \
 {                                                                               \
@@ -47,6 +47,12 @@ FORCEINLINE void Modify##VarName##Instant(float Amount)                         
     VarName.ModifyInstant(Amount);                                              \
 }                                                                               \
 
-
+#define INITIALIZE_CHECK_CAST_DELEGATE(FUNC)                    \
+if (GetAbilityOwner())                                          \
+{                                                               \
+    UAbilityBase::FAbilityCastCheck CheckDelegate;              \
+    CheckDelegate.BindUObject(this, FUNC);                      \
+    GetAbilityOwner()->AddCheckCastDelegate(CheckDelegate);     \
+}                                                               \
 
 

@@ -27,13 +27,9 @@ private:
 
     AActor* Target;
 
-    virtual void InitializeTargetFinder();
 
 protected:
 
-    virtual void MoveToTarget(float AcceptanceRadius = -1);
-    virtual void TryToFindNewTarget();
-    virtual void SetTarget(AActor* NewTarget);
 
 public:
 

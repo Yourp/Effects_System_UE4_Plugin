@@ -4,14 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "TargetFinder.h"
-#include "Fighter.h"
+#include "Caster.h"
 #include "UnitCharacterBase.generated.h"
 
 class UFightManagerComponent;
 
 UCLASS()
-class FIGHTSIMULATION_API AUnitCharacterBase : public ACharacter, public ITargetFinder, public IFighter
+class FIGHTSIMULATION_API AUnitCharacterBase : public ACharacter, public ICaster
 {
 	GENERATED_BODY()
 
@@ -24,11 +23,5 @@ public:
 	// Sets default values for this character's properties
 	AUnitCharacterBase();
 
-    virtual void FindTargets(TArray<AActor*>& Targets) override;
-
-    virtual bool IsCanAttack() const override;
-
-    virtual void Attack(AActor* Target) override;
-
-    virtual float GetAttackRange() const override;
+    virtual USpellCastManagerComponent* GetSpellCastManagerComponent() const;
 };

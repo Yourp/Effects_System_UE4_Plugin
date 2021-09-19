@@ -41,8 +41,8 @@ public:
 
     virtual void HandleAffect(FAffectingInfo const& AffectingInfo) override;
 
-    virtual void AddAllParametersTo  (TArray<FFloatParameter*>& Params);
-    virtual void RemoveParametersFrom(TArray<FFloatParameter*>& Params);
+    virtual void RegisteringAllParameters  (USpellCastManagerComponent* ParamsOwner);
+    virtual void UnregisteringAllParameters(USpellCastManagerComponent* ParamsOwner);
 
     virtual void Apply(USpellCastManagerComponent* EffectCaster, USpellCastManagerComponent* EffectTarget) override;
     virtual void Remove();

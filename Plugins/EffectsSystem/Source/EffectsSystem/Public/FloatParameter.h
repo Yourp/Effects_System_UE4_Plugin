@@ -24,7 +24,7 @@ class EFFECTSSYSTEM_API AffectingMethod
 public:
     virtual ~AffectingMethod() {}
 
-    AffectingMethod();
+    AffectingMethod() {}
 
     virtual void Affect(FAffectingInfo const& Info) = 0;
     virtual void Affect(FFloatParameter& ChangedParameter, float ModValue) = 0;
@@ -116,7 +116,11 @@ public:
     FORCEINLINE void operator -= (float Val)       {        Value -= Val; }
     FORCEINLINE void operator /= (float Val)       {        Value /= Val; }
     FORCEINLINE void operator += (float Val)       {        Value += Val; }
+
+    FORCEINLINE operator float () { return Value; }
 };
+
+
 
 
 

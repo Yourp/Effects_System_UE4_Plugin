@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "SpellCastManagerComponent.h"
 #include "SpellEffect.h"
+#include "FightSimulation/SpellTaskTest.h"
 #include "FightManagerComponent.generated.h"
+
+class UAbilityBase;
 
 /**
  * 
@@ -33,5 +36,9 @@ private:
     UPROPERTY(EditAnywhere)
     FFloatParameter Health;
 
-    
+    UPROPERTY(EditAnywhere)
+    TArray<TSubclassOf<UAbilityBase>> AbilitiesDefault;
+
+    UPROPERTY()
+    TArray<UAbilityBase*> Abilities;
 };

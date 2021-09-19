@@ -13,25 +13,12 @@ AUnitCharacterBase::AUnitCharacterBase()
     SpellCastManagerComponent = CreateDefaultSubobject<UFightManagerComponent>("FightManagerComponent");
 }
 
-void AUnitCharacterBase::FindTargets(TArray<AActor*>& Targets)
+USpellCastManagerComponent* AUnitCharacterBase::GetSpellCastManagerComponent() const
 {
-
+    return SpellCastManagerComponent;
 }
 
-bool AUnitCharacterBase::IsCanAttack() const
-{
-    return true;
-}
 
-void AUnitCharacterBase::Attack(AActor* Target)
-{
-
-}
-
-float AUnitCharacterBase::GetAttackRange() const
-{
-    return 0;
-}
 
 
 

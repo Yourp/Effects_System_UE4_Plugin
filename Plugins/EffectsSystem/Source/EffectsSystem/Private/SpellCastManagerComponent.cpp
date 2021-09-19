@@ -6,6 +6,7 @@
 #include "FloatParameter.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
+#include "SpellBase.h"
 
 // Sets default values for this component's properties
 USpellCastManagerComponent::USpellCastManagerComponent()
@@ -39,19 +40,22 @@ void USpellCastManagerComponent::BeginPlay()
     Super::BeginPlay();
 
     InitializeFloatParameters();
-
-    for (auto& Stat : AllFloatParameters)
-    {
-        if (Stat->GetGameplayTag().IsValid())
-        {
-            AllParametersWithTags.Add(Stat);
-        }
-    }
 }
 
 void USpellCastManagerComponent::RegisterFloatParameter(FFloatParameter* NewParamPtr)
 {
-    AllFloatParameters.Add(NewParamPtr);
+    AllFloatParameters.AddUnique(NewParamPtr);
+
+    if (NewParamPtr->GetGameplayTag().IsValid())
+    {
+        AllParametersWithTags.AddUnique(NewParamPtr);
+    }
+}
+
+void USpellCastManagerComponent::UnregisterFloatParameter(FFloatParameter* NewParamPtr)
+{
+    AllFloatParameters.RemoveSwap(NewParamPtr);
+    AllParametersWithTags.RemoveSwap(NewParamPtr);
 }
 
 void USpellCastManagerComponent::ApplyEffect_Implementation(USpellCastManagerComponent* Caster, UClass* EffectClass)
@@ -110,22 +114,6 @@ void USpellCastManagerComponent::GetAllParametersByTagContainer(TArray<FFloatPar
     }
 }
 
-void USpellCastManagerComponent::TakeAllTagParametersFrom(UPermanentEffect* Effect)
-{
-    if (Effect)
-    {
-        Effect->AddAllParametersTo(AllParametersWithTags);
-    }
-}
-
-void USpellCastManagerComponent::RemoveAllTagParametersOf(UPermanentEffect* Effect)
-{
-    if (Effect)
-    {
-        Effect->RemoveParametersFrom(AllParametersWithTags);
-    }
-}
-
 void USpellCastManagerComponent::RegisteringAppliedEffect(UPermanentEffect* Effect)
 {
     if (Effect)
@@ -137,6 +125,29 @@ void USpellCastManagerComponent::RegisteringAppliedEffect(UPermanentEffect* Effe
 void USpellCastManagerComponent::UnregisteringAppliedEffect(UPermanentEffect* Effect)
 {
     AppliedEffects.RemoveSwap(Effect);
+}
+
+void USpellCastManagerComponent::TryCastSpell(USpellBase* Spell, USpellCastManagerComponent* Target)
+{
+    if (Spell == nullptr || Target == nullptr)
+    {
+        return;
+    }
+
+    if (!IsCanCastSpell())
+    {
+        return;
+    }
+
+    if (!Spell->IsCanCast())
+    {
+        return;
+    }
+}
+
+bool USpellCastManagerComponent::IsCanCastSpell() const
+{
+    return true;
 }
 
 TArray<FFloatParameter*> const& USpellCastManagerComponent::GetAllParametersWithTags() const

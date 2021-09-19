@@ -68,9 +68,6 @@ void MultiplyAffect::Affect(FAffectingInfo const& Info)
     Info.ChangedParameter.MultiplyLong(Info);
 }
 
-AffectingMethod::AffectingMethod()
-{
 
-}
 
 
