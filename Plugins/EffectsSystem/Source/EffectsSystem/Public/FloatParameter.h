@@ -92,8 +92,10 @@ public:
     FORCEINLINE float GetAdding()      const { return      Adding; }
     FORCEINLINE float GetMultiplying() const { return Multiplying; }
 
-    FORCEINLINE void SetValue    (float NewValue) { Value     = NewValue; }
-    FORCEINLINE void SetBaseValue(float NewValue) { BaseValue = NewValue; }
+    FORCEINLINE void SetValue    (float NewValue)   { Value       = NewValue; }
+    FORCEINLINE void SetBaseValue(float NewValue)   { BaseValue   = NewValue; }
+
+    void SetGameplayTag(const FGameplayTag& NewTag) { ParameterName = NewTag; }
 
     void MultiplyInstant(float   Rate);
     void ModifyInstant  (float Amount);

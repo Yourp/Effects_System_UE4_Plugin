@@ -16,7 +16,13 @@ class FIGHTSIMULATION_API USpellTaskTest : public USpellTask
     GENERATED_BODY()
 
     UPROPERTY(EditAnywhere)
-    FFloatParameter Param;
+    FFloatParameter Damage;
+
+    UPROPERTY(EditAnywhere)
+    FGameplayTag AffectedTag;
+
+    UPROPERTY(EditAnywhere)
+    FGameplayTag DamageTag;
 
 public:
 
@@ -25,6 +31,4 @@ public:
     virtual void PostInitProperties() override;
 
     void Run(USpellCastManagerComponent* Target, USpellCastData* CastData) override;
-
-    void AddParam(float Val);
 };

@@ -19,10 +19,7 @@ void USpellTaskTest::PostInitProperties()
 
 void USpellTaskTest::Run(USpellCastManagerComponent* Target, USpellCastData* CastData)
 {
-
+    FFloatParameter NewDamage;
+    NewDamage.SetGameplayTag(DamageTag);
 }
 
-void USpellTaskTest::AddParam(float Val)
-{
-    Param += Val;
-}
