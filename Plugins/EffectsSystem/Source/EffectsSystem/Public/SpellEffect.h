@@ -11,7 +11,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(editinlinenew, DefaultToInstanced)
 class EFFECTSSYSTEM_API USpellEffect : public UReplicatedObject
 {
 	GENERATED_BODY()
