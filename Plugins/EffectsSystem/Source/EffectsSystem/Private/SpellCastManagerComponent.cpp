@@ -127,29 +127,6 @@ void USpellCastManagerComponent::UnregisteringAppliedEffect(UPermanentEffect* Ef
     AppliedEffects.RemoveSwap(Effect);
 }
 
-void USpellCastManagerComponent::TryCastSpell(USpellBase* Spell, USpellCastManagerComponent* Target)
-{
-    if (Spell == nullptr || Target == nullptr)
-    {
-        return;
-    }
-
-    if (!IsCanCastSpell())
-    {
-        return;
-    }
-
-    if (!Spell->IsCanCast())
-    {
-        return;
-    }
-}
-
-bool USpellCastManagerComponent::IsCanCastSpell() const
-{
-    return true;
-}
-
 TArray<FFloatParameter*> const& USpellCastManagerComponent::GetAllParametersWithTags() const
 {
     return AllParametersWithTags;

@@ -63,10 +63,6 @@ public:
     void RegisterFloatParameter  (FFloatParameter* NewParamPtr);
     void UnregisterFloatParameter(FFloatParameter* NewParamPtr);
 
-    virtual void TryCastSpell(USpellBase* Spell, USpellCastManagerComponent* Target);
-
-    virtual bool IsCanCastSpell() const;
-
     TArray<FFloatParameter*> const& GetAllParametersWithTags() const;
 
     virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
