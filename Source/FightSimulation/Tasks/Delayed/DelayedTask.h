@@ -45,11 +45,8 @@ public:
 
     virtual void Run(USpellCastManagerComponent* Target, USpellCastData* CastData) override;
 
-    virtual void PostInitProperties() override;
-
     UFUNCTION()
     void Execute(FDelayedTaskTimerData& Data);
 
-    uint64 IsCantCast() const;
 
 };

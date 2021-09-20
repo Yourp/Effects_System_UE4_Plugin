@@ -21,21 +21,10 @@ void UDelayedTask::Run(USpellCastManagerComponent* Target, USpellCastData* CastD
     GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, Delay, false);
 }
 
-void UDelayedTask::PostInitProperties()
-{
-    Super::PostInitProperties();
-
-    INITIALIZE_CHECK_CAST_DELEGATE(&UDelayedTask::IsCantCast);
-}
-
 void UDelayedTask::Execute(FDelayedTaskTimerData& Data)
 {
     USpellTask::RunTaskList(NextTasks, Data.Target, Data.CastData);
     TimersData.RemoveSwap(Data);
 }
 
-uint64 UDelayedTask::IsCantCast() const
-{
-    return 0;
-}
 
