@@ -54,6 +54,11 @@ public:
 
     FFloatParameter* FindFirstParameterByTag(FGameplayTag const& Tag);
 
+    void Impacting(float Amount, FGameplayTagContainer const& ImpactTag, enum EAffectingType Type);
+    void ApplyAllModsTo(float& Amount, FGameplayTag const& AmountName);
+    float GetModifierFor   (FGameplayTag const& Tag) const;
+    float GetMultiplayerFor(FGameplayTag const& Tag) const;
+
     void GetAllParametersByTag         (TArray<FFloatParameter*>& ParamList, FGameplayTag          const& Tag);
     void GetAllParametersByTagContainer(TArray<FFloatParameter*>& ParamList, FGameplayTagContainer const& Tag);
 

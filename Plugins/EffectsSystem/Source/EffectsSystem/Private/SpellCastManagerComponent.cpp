@@ -92,6 +92,65 @@ FFloatParameter* USpellCastManagerComponent::FindFirstParameterByTag(FGameplayTa
     return nullptr;
 }
 
+void USpellCastManagerComponent::Impacting(float Amount, FGameplayTagContainer const& ImpactTag, EAffectingType Type)
+{
+    for (FFloatParameter* CurrentParameter : AllParametersWithTags)
+    {
+        if (CurrentParameter->GetGameplayTag().MatchesAny(ImpactTag))
+        {
+            switch (Type)
+            {
+                case Affect_Modify:
+                {
+                    *CurrentParameter += Amount;
+                    break;
+                }
+                case Affect_Multiply:
+                {
+                    *CurrentParameter *= Amount;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void USpellCastManagerComponent::ApplyAllModsTo(float& Amount, FGameplayTag const& AmountName)
+{
+    Amount += GetModifierFor   (AmountName);
+    Amount *= GetMultiplayerFor(AmountName);
+}
+
+float USpellCastManagerComponent::GetModifierFor(FGameplayTag const& Tag) const
+{
+    float Modifier = 0;
+
+    for (UPermanentEffect const* Effect : AppliedEffects)
+    {
+        if (Effect->GetAffectingType() == EAffectingType::Affect_Modify && Tag.MatchesAny(Effect->GetAffectingTag()))
+        {
+            Modifier += Effect->GetModifierValue();
+        }
+    }
+
+    return Modifier;
+}
+
+float USpellCastManagerComponent::GetMultiplayerFor(FGameplayTag const& Tag) const
+{
+    float Multiplayer = 1.f;
+
+    for (UPermanentEffect const* Effect : AppliedEffects)
+    {
+        if (Effect->GetAffectingType() == EAffectingType::Affect_Multiply && Tag.MatchesAny(Effect->GetAffectingTag()))
+        {
+            Multiplayer *= Effect->GetModifierValue();
+        }
+    }
+
+    return Multiplayer;
+}
+
 void USpellCastManagerComponent::GetAllParametersByTag(TArray<FFloatParameter*>& ParamList, FGameplayTag const& Tag)
 {
     for (auto& Param : AllParametersWithTags)
