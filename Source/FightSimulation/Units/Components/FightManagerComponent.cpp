@@ -14,8 +14,6 @@ void UFightManagerComponent::BeginPlay()
 {
     Super::BeginPlay();
 
-    ApplyEffect(this, TestEff);
-
     if (GetOwnerRole() == ROLE_Authority)
     {
         for (auto& Itr : AbilitiesDefault)

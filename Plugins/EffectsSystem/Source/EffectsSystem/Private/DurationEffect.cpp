@@ -9,20 +9,20 @@ void UDurationEffect::PostEditChangeProperty(FPropertyChangedEvent& PropertyChan
 
     if (PropertyChangedEvent.GetPropertyName() == "BaseValue")
     {
-        Duration.Initialize();
+        DurationParameter.Initialize();
     }
 }
 
 void UDurationEffect::RegisteringAllParameters(USpellCastManagerComponent* ParamsOwner)
 {
     Super::RegisteringAllParameters(ParamsOwner);
-    ParamsOwner->RegisterFloatParameter(&Duration);
+    ParamsOwner->RegisterFloatParameter(&DurationParameter);
 }
 
 void UDurationEffect::UnregisteringAllParameters(USpellCastManagerComponent* ParamsOwner)
 {
     Super::UnregisteringAllParameters(ParamsOwner);
-    ParamsOwner->UnregisterFloatParameter(&Duration);
+    ParamsOwner->UnregisterFloatParameter(&DurationParameter);
 }
 
 void UDurationEffect::BeginPlay(UWorld* World)
@@ -31,11 +31,11 @@ void UDurationEffect::BeginPlay(UWorld* World)
 
     if (GetOwnerRole() == ROLE_Authority)
     {
-        World->GetTimerManager().SetTimer(DurationTimer, this, &UDurationEffect::Expired, Duration.GetValue(), false);
+        World->GetTimerManager().SetTimer(DurationTimer, this, &UDurationEffect::Expired, DurationParameter.GetValue(), false);
         return;
     }
 
-    World->GetTimerManager().SetTimer(DurationTimer, Duration.GetValue(), false);
+    World->GetTimerManager().SetTimer(DurationTimer, DurationParameter.GetValue(), false);
 }
 
 void UDurationEffect::Expired()

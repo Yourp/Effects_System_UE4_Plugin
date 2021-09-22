@@ -32,7 +32,7 @@ protected:
     virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
 
     UPROPERTY(EditAnywhere, Category = "Duration")
-    FFloatParameter Duration;
+    FFloatParameter DurationParameter;
 
     FTimerHandle DurationTimer;
 

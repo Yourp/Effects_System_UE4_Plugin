@@ -9,7 +9,7 @@ void USpellEffect::PostEditChangeProperty(FPropertyChangedEvent& PropertyChanged
 
     if (PropertyChangedEvent.GetPropertyName() == "BaseValue")
     {
-        Modifier.Initialize();
+        ModifierParameter.Initialize();
     }
 }
 
@@ -17,9 +17,9 @@ void USpellEffect::HandleAffect(FAffectingInfo const& AffectingInfo)
 {
     FFloatParameter& Param = AffectingInfo.ChangedParameter;
 
-    if (Modifier.GetValue() && Param.GetMultiplying() > 0.f)
+    if (ModifierParameter.GetValue() && Param.GetMultiplying() > 0.f)
     {
-        FFloatParameter::AffectingMethods[GetAffectingType()]->Affect(AffectingInfo.ChangedParameter, Modifier.GetValue());
+        FFloatParameter::AffectingMethods[GetAffectingType()]->Affect(AffectingInfo.ChangedParameter, ModifierParameter.GetValue());
         Param.GetAfterChangeDelegate().Broadcast(AffectingInfo);
     }
 }

@@ -26,7 +26,7 @@ public:
 
     FORCEINLINE uint8 GetAffectingType() const { return AffectingType; }
 
-    FORCEINLINE float GetModifierValue() const { return Modifier.GetValue(); }
+    FORCEINLINE float GetModifierValue() const { return ModifierParameter.GetValue(); }
 
     FORCEINLINE FGameplayTagContainer const& GetAffectingTag() const { return AffectingTag; }
 
@@ -37,7 +37,7 @@ public:
 protected:
 
     UPROPERTY(EditAnywhere, Category = "Modifier")
-    FFloatParameter Modifier;
+    FFloatParameter ModifierParameter;
 
     UPROPERTY(EditAnywhere, Category = "Modifier")
     FGameplayTagContainer AffectingTag;

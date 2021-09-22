@@ -55,7 +55,7 @@ public:
 protected:
 
     UPROPERTY(EditAnywhere, Category = "Period")
-    FFloatParameter Period;
+    FFloatParameter PeriodParameter;
 
     UPROPERTY(EditAnywhere, Category = "Period")
     TSubclassOf<USpellEffect> TickEffect;

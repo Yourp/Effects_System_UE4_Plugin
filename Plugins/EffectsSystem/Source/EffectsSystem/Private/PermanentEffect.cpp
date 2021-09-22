@@ -16,7 +16,7 @@ void UPermanentEffect::PostEditChangeProperty(FPropertyChangedEvent& PropertyCha
 
     if (PropertyChangedEvent.GetPropertyName() == "BaseValue")
     {
-        Period.Initialize();
+        PeriodParameter.Initialize();
     }
 }
 
@@ -29,11 +29,11 @@ void UPermanentEffect::OnPeriodTick()
     {
         if (TickingType == EEffectTickingType::Server)
         {
-            Owner->ApplyEffect(Caster, TickEffect);
+            //Owner->ApplyEffect(Caster, TickEffect);
             return;
         }
 
-        Owner->ApplyEffect_Implementation(Caster, TickEffect);
+        //Owner->ApplyEffect_Implementation(Caster, TickEffect);
     }
 }
 
@@ -60,7 +60,7 @@ void UPermanentEffect::OnPeriodChanged(FAffectingInfo const& AffectingInfo)
         FTimerManager& TimerManager = World->GetTimerManager();
         float PeriodRemaining = TimerManager.GetTimerRemaining(PeriodTimer);
         PeriodRemaining *= AffectingInfo.ChangedParameter.GetValue() / AffectingInfo.OldParameterValue;
-        TimerManager.SetTimer(PeriodTimer, this, &UPermanentEffect::OnPeriodTick, Period.GetValue(), true, PeriodRemaining);
+        TimerManager.SetTimer(PeriodTimer, this, &UPermanentEffect::OnPeriodTick, PeriodParameter.GetValue(), true, PeriodRemaining);
     }
 }
 
@@ -68,27 +68,27 @@ void UPermanentEffect::BeginPlay(UWorld* World)
 {
     Super::BeginPlay(World);
 
-    if (Period > 0.f && (GetOwnerRole() == ROLE_Authority || TickingType == EEffectTickingType::ServerAndClient))
+    if (PeriodParameter > 0.f && (GetOwnerRole() == ROLE_Authority || TickingType == EEffectTickingType::ServerAndClient))
     {
-        World->GetTimerManager().SetTimer(PeriodTimer, this, &UPermanentEffect::OnPeriodTick, Period.GetValue(), true);
+        World->GetTimerManager().SetTimer(PeriodTimer, this, &UPermanentEffect::OnPeriodTick, PeriodParameter.GetValue(), true);
     }
 
-    if (Period.GetGameplayTag().IsValid())
+    if (PeriodParameter.GetGameplayTag().IsValid())
     {
-        Period.GetAfterChangeDelegate().AddUObject(this, &UPermanentEffect::OnPeriodChanged);
+        PeriodParameter.GetAfterChangeDelegate().AddUObject(this, &UPermanentEffect::OnPeriodChanged);
     }
 }
 
 void UPermanentEffect::RegisteringAllParameters(USpellCastManagerComponent* ParamsOwner)
 {
-    ParamsOwner->RegisterFloatParameter(&Modifier);
-    ParamsOwner->RegisterFloatParameter(&Period);
+    ParamsOwner->RegisterFloatParameter(&ModifierParameter);
+    ParamsOwner->RegisterFloatParameter(&PeriodParameter);
 }
 
 void UPermanentEffect::UnregisteringAllParameters(USpellCastManagerComponent* ParamsOwner)
 {
-    ParamsOwner->UnregisterFloatParameter(&Modifier);
-    ParamsOwner->UnregisterFloatParameter(&Period);
+    ParamsOwner->UnregisterFloatParameter(&ModifierParameter);
+    ParamsOwner->UnregisterFloatParameter(&PeriodParameter);
 }
 
 void UPermanentEffect::Apply(USpellCastManagerComponent* EffectCaster, USpellCastManagerComponent* EffectTarget)

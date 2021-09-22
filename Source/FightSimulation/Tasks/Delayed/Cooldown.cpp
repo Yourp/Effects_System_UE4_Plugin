@@ -56,5 +56,4 @@ void UCooldown::PostInitProperties()
 void UCooldown::RegisteringAllFloatParameters()
 {
     RegisterFloatParameter(&RecoveryTime);
-    RegisterFloatParameter(&RecoveryTime);
 }
