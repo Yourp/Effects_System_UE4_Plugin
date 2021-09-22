@@ -8,19 +8,7 @@ AffectingMethod* FFloatParameter::AffectingMethods[EAffectingType::Affect_Max] =
     new MultiplyAffect
 };
 
-void FFloatParameter::MultiplyInstant(float Rate)
-{
-    BaseValue *= Rate;
-    Value     *= Rate;
-}
-
-void FFloatParameter::ModifyInstant(float Amount)
-{
-    BaseValue += Amount / Multiplying;
-    Value     += Amount;
-}
-
-void FFloatParameter::MultiplyLong(FAffectingInfo const& Info)
+void FFloatParameter::operator*=(FAffectingInfo const& Info)
 {
     check(Info.Effect);
 
@@ -34,7 +22,7 @@ void FFloatParameter::MultiplyLong(FAffectingInfo const& Info)
     }
 }
 
-void FFloatParameter::ModifyLong(FAffectingInfo const& Info)
+void FFloatParameter::operator+=(FAffectingInfo const& Info)
 {
     check(Info.Effect);
 
@@ -48,24 +36,41 @@ void FFloatParameter::ModifyLong(FAffectingInfo const& Info)
     }
 }
 
+void FFloatParameter::operator*=(float Val)
+{
+    BaseValue *= Val;
+    Value     *= Val;
+}
+
+void FFloatParameter::operator+=(float Val)
+{
+    BaseValue += Val / Multiplying;
+    Value     += Val;
+}
+
+float FFloatParameter::Calculate(float Base, float Add, float Multiply)
+{
+    return (Base + Add) * Multiply;
+}
+
 void ModifyAffect::Affect(FFloatParameter& ChangedParameter, float ModValue)
 {
-    ChangedParameter.ModifyInstant(ModValue);
+    ChangedParameter += ModValue;
 }
 
 void MultiplyAffect::Affect(FFloatParameter& ChangedParameter, float ModValue)
 {
-    ChangedParameter.MultiplyInstant(ModValue);
+    ChangedParameter *= ModValue;
 }
 
 void ModifyAffect::Affect(FAffectingInfo const& Info)
 {
-    Info.ChangedParameter.ModifyLong(Info);
+    Info.ChangedParameter += Info;
 }
 
 void MultiplyAffect::Affect(FAffectingInfo const& Info)
 {
-    Info.ChangedParameter.MultiplyLong(Info);
+    Info.ChangedParameter *= Info;
 }
 
 

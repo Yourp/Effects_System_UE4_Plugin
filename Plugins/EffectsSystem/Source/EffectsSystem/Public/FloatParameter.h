@@ -14,9 +14,9 @@ struct FFloatParameter;
 UENUM()
 enum EAffectingType
 {
-    Affect_Modify,
-    Affect_Multiply,
-    Affect_Max          UMETA(Hidden)
+    Affect_Modify      UMETA(DisplayName =   "Modify"),
+    Affect_Multiply    UMETA(DisplayName = "Multiply"),
+    Affect_Max         UMETA(Hidden)
 };
 
 class EFFECTSSYSTEM_API AffectingMethod
@@ -97,29 +97,29 @@ public:
 
     void SetGameplayTag(const FGameplayTag& NewTag) { ParameterName = NewTag; }
 
-    void MultiplyInstant(float   Rate);
-    void ModifyInstant  (float Amount);
-    
-    void MultiplyLong(FAffectingInfo const& Info);
-    void ModifyLong  (FAffectingInfo const& Info);
-
     FORCEINLINE FAfterChange& GetAfterChangeDelegate() { return AfterChangeDelegate; };
 
     FORCEINLINE void Recalculate()
     {
-        Value = (BaseValue + Adding) * Multiplying;
+        Value = Calculate(BaseValue, Adding, Multiplying);
     }
+
+    static float Calculate(float Base, float Add, float Multiply);
 
     FORCEINLINE bool operator >  (float Val) const { return Value >  Val; }
     FORCEINLINE bool operator == (float Val) const { return Value == Val; }
     FORCEINLINE bool operator <  (float Val) const { return Value <  Val; }
     FORCEINLINE void operator =  (float Val)       {        Value =  Val; }
-    FORCEINLINE void operator *= (float Val)       {        Value *= Val; }
     FORCEINLINE void operator -= (float Val)       {        Value -= Val; }
     FORCEINLINE void operator /= (float Val)       {        Value /= Val; }
-    FORCEINLINE void operator += (float Val)       {        Value += Val; }
 
     FORCEINLINE operator float () { return Value; }
+
+    void operator += (float Val);
+    void operator *= (float Val);
+
+    void operator += (FAffectingInfo const& Info);
+    void operator *= (FAffectingInfo const& Info);
 };
 
 

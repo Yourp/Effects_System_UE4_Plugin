@@ -40,11 +40,11 @@ FORCEINLINE void Set##VarName##Base(float New##VarName##Value)                  
 }                                                                               \
 FORCEINLINE void Multiply##VarName##Instant(float Rate)                         \
 {                                                                               \
-    VarName.MultiplyInstant(Rate);                                              \
+    VarName *= Rate;                                                            \
 }                                                                               \
 FORCEINLINE void Modify##VarName##Instant(float Amount)                         \
 {                                                                               \
-    VarName.ModifyInstant(Amount);                                              \
+    VarName += Amount;                                                          \
 }                                                                               \
 
 #define INITIALIZE_CHECK_CAST_DELEGATE(FUNC)                    \
