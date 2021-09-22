@@ -58,17 +58,14 @@ void USpellCastManagerComponent::UnregisterFloatParameter(FFloatParameter* NewPa
     AllParametersWithTags.RemoveSwap(NewParamPtr);
 }
 
-void USpellCastManagerComponent::ApplyEffect_Implementation(USpellCastManagerComponent* Caster, UClass* EffectClass)
+void USpellCastManagerComponent::ApplyEffect_Implementation(USpellCastManagerComponent* Caster, USpellEffect* Effect)
 {
-    if (!Caster || !EffectClass)
+    if (!Caster || !Effect)
     {
         return;
     }
 
-    if (USpellEffect* Effect = EffectClass->GetDefaultObject<USpellEffect>())
-    {
-        Effect->Apply(Caster, this); 
-    }
+    Effect->Apply(Caster, this); 
 }
 
 void USpellCastManagerComponent::RemoveEffect_Implementation(UPermanentEffect* Effect)

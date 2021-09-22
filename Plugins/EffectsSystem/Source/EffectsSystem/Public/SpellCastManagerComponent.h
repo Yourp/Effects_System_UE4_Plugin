@@ -47,7 +47,7 @@ public:
 	USpellCastManagerComponent();
 
     UFUNCTION(NetMulticast, Reliable)
-    void ApplyEffect(USpellCastManagerComponent* Caster, UClass* EffectClass);
+    void ApplyEffect(USpellCastManagerComponent* Caster, USpellEffect* Effect);
 
     UFUNCTION(NetMulticast, Reliable)
     void RemoveEffect(UPermanentEffect* Effect);
