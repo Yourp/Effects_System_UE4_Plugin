@@ -18,32 +18,67 @@ class EFFECTSSYSTEM_API USpellEffect : public UReplicatedObject
 	
 public:
 
-    FORCEINLINE virtual bool HasDuration() const { return false; }
-
-    FORCEINLINE virtual bool IsInstant() const { return true; }
-
-    FORCEINLINE virtual bool IsPermanent() const { return false; }
-
     FORCEINLINE uint8 GetAffectingType() const { return AffectingType; }
 
-    FORCEINLINE float GetModifierValue() const { return ModifierParameter.GetValue(); }
+    FORCEINLINE float GetModifierValue() const { return ModifierParameter; }
 
     FORCEINLINE FGameplayTagContainer const& GetAffectingTag() const { return AffectingTag; }
 
-    virtual void HandleAffect(FAffectingInfo const& AffectingInfo);
+    virtual void Apply(USpellCastManagerComponent* EffectTarget);
 
-    virtual void Apply(USpellCastManagerComponent* EffectCaster, USpellCastManagerComponent* EffectTarget);
+    virtual void RegisteringAllParameters  (USpellCastManagerComponent* ParamsOwner);
+    virtual void UnregisteringAllParameters(USpellCastManagerComponent* ParamsOwner);
+
+    virtual void Remove();
+
+    virtual void ApplyTemporarily(USpellCastManagerComponent* EffectCaster, USpellCastManagerComponent* EffectTarget);
+
+    FORCEINLINE USpellCastManagerComponent* GetCaster() const { return Caster; }
+    FORCEINLINE USpellCastManagerComponent* GetOwner()  const { return Owner;  }
+
+    FORCEINLINE void SetCaster  ( USpellCastManagerComponent* NewCaster ) { Caster = NewCaster; }
+    FORCEINLINE void SetOwner   ( USpellCastManagerComponent* NewOwner  ) { Owner  = NewOwner;  }
 
 protected:
 
-    UPROPERTY(EditAnywhere, Category = "Modifier")
+    UPROPERTY(EditAnywhere)
     FFloatParameter ModifierParameter;
 
-    UPROPERTY(EditAnywhere, Category = "Modifier")
+    UPROPERTY(EditAnywhere)
     FGameplayTagContainer AffectingTag;
 
-    UPROPERTY(EditAnywhere, Category = "Modifier")
+    UPROPERTY(EditAnywhere)
     TEnumAsByte<EAffectingType> AffectingType;
+
+    UPROPERTY(EditAnywhere, Category = "Period")
+    FFloatParameter PeriodParameter;
+
+    UPROPERTY(EditAnywhere, Category = "Period")
+    uint8 bStartPeriodicTickWhenApply : 1;
+
+    FTimerHandle PeriodTimer;
+
+    UPROPERTY(EditAnywhere)
+    FFloatParameter DurationParameter;
+
+    FTimerHandle DurationTimer;
+
+    UPROPERTY()
+    USpellCastManagerComponent* Caster;
+
+    UPROPERTY()
+    USpellCastManagerComponent* Owner;
+
+    virtual void AddToParameter     (FFloatParameter* Parameter);
+    virtual void RemoveFromParameter(FFloatParameter* Parameter);
+
+    virtual void OnPeriodChanged(FAffectingInfo const& AffectingInfo);
+
+    virtual void OnPeriodTick();
+
+    virtual void DurationExpired();
+
+    virtual void BeginPlay(UWorld* World) override;
 
     virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
 

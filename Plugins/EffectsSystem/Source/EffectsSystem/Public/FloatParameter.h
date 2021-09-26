@@ -14,36 +14,9 @@ struct FFloatParameter;
 UENUM()
 enum EAffectingType
 {
-    Affect_Modify      UMETA(DisplayName =   "Modify"),
+    Affect_Add         UMETA(DisplayName =      "Add"),
     Affect_Multiply    UMETA(DisplayName = "Multiply"),
     Affect_Max         UMETA(Hidden)
-};
-
-class EFFECTSSYSTEM_API AffectingMethod
-{
-public:
-    virtual ~AffectingMethod() {}
-
-    AffectingMethod() {}
-
-    virtual void Affect(FAffectingInfo const& Info) = 0;
-    virtual void Affect(FFloatParameter& ChangedParameter, float ModValue) = 0;
-};
-
-class EFFECTSSYSTEM_API ModifyAffect : public AffectingMethod
-{
-public:
-
-    virtual void Affect(FAffectingInfo const& Info) override;
-    virtual void Affect(FFloatParameter& ChangedParameter, float ModValue) override;
-};
-
-class EFFECTSSYSTEM_API MultiplyAffect : public AffectingMethod
-{
-public:
-
-    virtual void Affect(FAffectingInfo const& Info) override;
-    virtual void Affect(FFloatParameter& ChangedParameter, float ModValue) override;
 };
 
 USTRUCT(BlueprintType)
@@ -51,7 +24,7 @@ struct EFFECTSSYSTEM_API FFloatParameter
 {
     GENERATED_BODY()
 
-    DECLARE_MULTICAST_DELEGATE_OneParam(FAfterChange, FAffectingInfo const&);
+    DECLARE_MULTICAST_DELEGATE_OneParam(FAfterChange, float);
 
 private:
 
@@ -76,11 +49,17 @@ private:
 
     FAfterChange AfterChangeDelegate;
 
+    void UpdateMultiplyingValue();
+    void UpdateAddingValue();
+
+    FORCEINLINE void Recalculate()
+    {
+        Value = Calculate(BaseValue, Adding, Multiplying);
+    }
+
 public:
 
     FFloatParameter() : Multiplying(1.f) {}
-
-    static AffectingMethod* AffectingMethods[EAffectingType::Affect_Max];
 
     FORCEINLINE void Initialize() { Value = BaseValue; }
 
@@ -92,17 +71,17 @@ public:
     FORCEINLINE float GetAdding()      const { return      Adding; }
     FORCEINLINE float GetMultiplying() const { return Multiplying; }
 
-    FORCEINLINE void SetValue    (float NewValue)   { Value       = NewValue; }
-    FORCEINLINE void SetBaseValue(float NewValue)   { BaseValue   = NewValue; }
+    FORCEINLINE void SetBaseValue(float NewValue)
+    {
+        BaseValue = NewValue;
+    }
+
+    void SetValue(float NewValue);
+
 
     void SetGameplayTag(const FGameplayTag& NewTag) { ParameterName = NewTag; }
 
     FORCEINLINE FAfterChange& GetAfterChangeDelegate() { return AfterChangeDelegate; };
-
-    FORCEINLINE void Recalculate()
-    {
-        Value = Calculate(BaseValue, Adding, Multiplying);
-    }
 
     static float Calculate(float Base, float Add, float Multiply);
 
@@ -113,13 +92,13 @@ public:
     FORCEINLINE void operator -= (float Val)       {        Value -= Val; }
     FORCEINLINE void operator /= (float Val)       {        Value /= Val; }
 
-    FORCEINLINE operator float () { return Value; }
+    FORCEINLINE operator float () const { return Value; }
 
     void operator += (float Val);
     void operator *= (float Val);
 
-    void operator += (FAffectingInfo const& Info);
-    void operator *= (FAffectingInfo const& Info);
+    void operator += (USpellEffect const* Effect);
+    void operator -= (USpellEffect const* Effect);
 };
 
 

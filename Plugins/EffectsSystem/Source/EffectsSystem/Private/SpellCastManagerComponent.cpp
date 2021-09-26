@@ -2,11 +2,10 @@
 
 
 #include "SpellCastManagerComponent.h"
-#include "DurationEffect.h"
 #include "FloatParameter.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
-#include "SpellBase.h"
+#include "SpellEffect.h"
 
 // Sets default values for this component's properties
 USpellCastManagerComponent::USpellCastManagerComponent()
@@ -65,10 +64,10 @@ void USpellCastManagerComponent::ApplyEffect_Implementation(USpellCastManagerCom
         return;
     }
 
-    Effect->Apply(Caster, this); 
+    Effect->Apply(this); 
 }
 
-void USpellCastManagerComponent::RemoveEffect_Implementation(UPermanentEffect* Effect)
+void USpellCastManagerComponent::RemoveEffect_Implementation(USpellEffect* Effect)
 {
     if (Effect)
     {
@@ -97,7 +96,7 @@ void USpellCastManagerComponent::Impacting(float Amount, FGameplayTagContainer c
         {
             switch (Type)
             {
-                case Affect_Modify:
+                case Affect_Add:
                 {
                     *CurrentParameter += Amount;
                     break;
@@ -122,9 +121,9 @@ float USpellCastManagerComponent::GetModifierFor(FGameplayTag const& Tag) const
 {
     float Modifier = 0;
 
-    for (UPermanentEffect const* Effect : AppliedEffects)
+    for (USpellEffect const* Effect : AppliedEffects)
     {
-        if (Effect->GetAffectingType() == EAffectingType::Affect_Modify && Tag.MatchesAny(Effect->GetAffectingTag()))
+        if (Effect->GetAffectingType() == EAffectingType::Affect_Add && Tag.MatchesAny(Effect->GetAffectingTag()))
         {
             Modifier += Effect->GetModifierValue();
         }
@@ -137,7 +136,7 @@ float USpellCastManagerComponent::GetMultiplayerFor(FGameplayTag const& Tag) con
 {
     float Multiplayer = 1.f;
 
-    for (UPermanentEffect const* Effect : AppliedEffects)
+    for (USpellEffect const* Effect : AppliedEffects)
     {
         if (Effect->GetAffectingType() == EAffectingType::Affect_Multiply && Tag.MatchesAny(Effect->GetAffectingTag()))
         {
@@ -170,7 +169,7 @@ void USpellCastManagerComponent::GetAllParametersByTagContainer(TArray<FFloatPar
     }
 }
 
-void USpellCastManagerComponent::RegisteringAppliedEffect(UPermanentEffect* Effect)
+void USpellCastManagerComponent::RegisteringAppliedEffect(USpellEffect* Effect)
 {
     if (Effect)
     {
@@ -178,7 +177,7 @@ void USpellCastManagerComponent::RegisteringAppliedEffect(UPermanentEffect* Effe
     }
 }
 
-void USpellCastManagerComponent::UnregisteringAppliedEffect(UPermanentEffect* Effect)
+void USpellCastManagerComponent::UnregisteringAppliedEffect(USpellEffect* Effect)
 {
     AppliedEffects.RemoveSwap(Effect);
 }
@@ -188,19 +187,7 @@ TArray<FFloatParameter*> const& USpellCastManagerComponent::GetAllParametersWith
     return AllParametersWithTags;
 }
 
-FAffectingInfo::FAffectingInfo
-(
-    USpellCastManagerComponent const* NewOwner,
-    USpellCastManagerComponent const* NewInitiator,
-    FFloatParameter& NewChangedParameter,
-    float NewModifierValue,
-    USpellEffect const* NewEffect,
-    bool bIsApply
-)
-    : Owner(NewOwner), Initiator(NewInitiator), ChangedParameter(NewChangedParameter), ModifierValue(NewModifierValue), Effect(NewEffect), bIsApplying(bIsApply)
-{
-    OldParameterValue = ChangedParameter.GetValue();
-}
+
 
 
 

@@ -15,28 +15,6 @@ struct FFloatParameter;
 struct FGameplayTag;
 struct FGameplayTagContainer;
 
-
-struct FAffectingInfo
-{
-    FAffectingInfo
-    (
-        USpellCastManagerComponent const* NewOwner,
-        USpellCastManagerComponent const* NewInitiator,
-        FFloatParameter& NewChangedParameter,
-        float NewModifierValue,
-        USpellEffect const* NewEffect,
-        bool bIsApply
-    );
-
-    USpellCastManagerComponent const* Owner;
-    USpellCastManagerComponent const* Initiator;
-    FFloatParameter& ChangedParameter;
-    float ModifierValue;
-    USpellEffect const* Effect;
-    float OldParameterValue;
-    bool bIsApplying;
-};
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class EFFECTSSYSTEM_API USpellCastManagerComponent : public UActorComponent
 {
@@ -50,7 +28,7 @@ public:
     void ApplyEffect(USpellCastManagerComponent* Caster, USpellEffect* Effect);
 
     UFUNCTION(NetMulticast, Reliable)
-    void RemoveEffect(UPermanentEffect* Effect);
+    void RemoveEffect(USpellEffect* Effect);
 
     FFloatParameter* FindFirstParameterByTag(FGameplayTag const& Tag);
 
@@ -62,8 +40,8 @@ public:
     void GetAllParametersByTag         (TArray<FFloatParameter*>& ParamList, FGameplayTag          const& Tag);
     void GetAllParametersByTagContainer(TArray<FFloatParameter*>& ParamList, FGameplayTagContainer const& Tag);
 
-    void RegisteringAppliedEffect  (UPermanentEffect* Effect);
-    void UnregisteringAppliedEffect(UPermanentEffect* Effect);
+    void RegisteringAppliedEffect  (USpellEffect* Effect);
+    void UnregisteringAppliedEffect(USpellEffect* Effect);
 
     void RegisterFloatParameter  (FFloatParameter* NewParamPtr);
     void UnregisterFloatParameter(FFloatParameter* NewParamPtr);
@@ -88,7 +66,7 @@ private:
     TArray<FFloatParameter*> AllParametersWithTags;
 
     UPROPERTY()
-    TArray<UPermanentEffect*> AppliedEffects;
+    TArray<USpellEffect*> AppliedEffects;
 
     virtual void InitializeFloatParameters() {}
 

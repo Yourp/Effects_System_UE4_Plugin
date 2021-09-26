@@ -1,19 +1,80 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FloatParameter.h"
+#include "SpellEffect.h"
 
-AffectingMethod* FFloatParameter::AffectingMethods[EAffectingType::Affect_Max] =
+void FFloatParameter::operator-=(USpellEffect const* Effect)
 {
-    new ModifyAffect,
-    new MultiplyAffect
-};
+    check(Effect);
 
-void FFloatParameter::operator*=(FAffectingInfo const& Info)
+    if (AddingEffects.RemoveSwap(Effect))
+    {
+        UpdateAddingValue();
+    }
+
+    if (TotalMultiplyingEffects.RemoveSwap(Effect))
+    {
+        UpdateAddingValue();
+    }
+
+    float OldValue = GetValue();
+
+    Recalculate();
+
+    if (OldValue != GetValue())
+    {
+        AfterChangeDelegate.Broadcast(GetValue());
+    }
+}
+
+void FFloatParameter::operator+=(USpellEffect const* Effect)
 {
-    check(Info.Effect);
+    check(Effect);
 
-    Info.bIsApplying ? TotalMultiplyingEffects.Add(Info.Effect) : TotalMultiplyingEffects.RemoveSwap(Info.Effect);
+    switch (Effect->GetAffectingType())
+    {
+        case Affect_Add:
+        {
+            AddingEffects.Add(Effect);
+            UpdateAddingValue();
+            break;
+        }
+        case Affect_Multiply:
+        {
+            TotalMultiplyingEffects.Add(Effect);
+            UpdateMultiplyingValue();
+            break;
+        }
+    }
 
+    float OldValue = GetValue();
+
+    Recalculate();
+
+    if (OldValue != GetValue())
+    {
+        AfterChangeDelegate.Broadcast(GetValue());
+    }
+}
+
+void FFloatParameter::operator*=(float Val)
+{
+    BaseValue *= Val;
+    Value     *= Val;
+
+    AfterChangeDelegate.Broadcast(GetValue());
+}
+
+void FFloatParameter::operator+=(float Val)
+{
+    BaseValue += Val / Multiplying;
+    Value     += Val;
+
+    AfterChangeDelegate.Broadcast(GetValue());
+}
+
+void FFloatParameter::UpdateMultiplyingValue()
+{
     Multiplying = 1.f;
 
     for (auto& Itr : TotalMultiplyingEffects)
@@ -22,12 +83,8 @@ void FFloatParameter::operator*=(FAffectingInfo const& Info)
     }
 }
 
-void FFloatParameter::operator+=(FAffectingInfo const& Info)
+void FFloatParameter::UpdateAddingValue()
 {
-    check(Info.Effect);
-
-    Info.bIsApplying ? AddingEffects.Add(Info.Effect) : AddingEffects.RemoveSwap(Info.Effect);
-
     Adding = 0.f;
 
     for (auto& Itr : AddingEffects)
@@ -36,16 +93,13 @@ void FFloatParameter::operator+=(FAffectingInfo const& Info)
     }
 }
 
-void FFloatParameter::operator*=(float Val)
+void FFloatParameter::SetValue(float NewValue)
 {
-    BaseValue *= Val;
-    Value     *= Val;
-}
-
-void FFloatParameter::operator+=(float Val)
-{
-    BaseValue += Val / Multiplying;
-    Value     += Val;
+    if (Value != NewValue)
+    {
+        Value = NewValue;
+        AfterChangeDelegate.Broadcast(GetValue());
+    }
 }
 
 float FFloatParameter::Calculate(float Base, float Add, float Multiply)
@@ -53,25 +107,7 @@ float FFloatParameter::Calculate(float Base, float Add, float Multiply)
     return (Base + Add) * Multiply;
 }
 
-void ModifyAffect::Affect(FFloatParameter& ChangedParameter, float ModValue)
-{
-    ChangedParameter += ModValue;
-}
 
-void MultiplyAffect::Affect(FFloatParameter& ChangedParameter, float ModValue)
-{
-    ChangedParameter *= ModValue;
-}
-
-void ModifyAffect::Affect(FAffectingInfo const& Info)
-{
-    Info.ChangedParameter += Info;
-}
-
-void MultiplyAffect::Affect(FAffectingInfo const& Info)
-{
-    Info.ChangedParameter *= Info;
-}
 
 
 

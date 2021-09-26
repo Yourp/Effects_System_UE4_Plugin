@@ -4,6 +4,7 @@
 #include "SpellTask.h"
 #include "SpellCastManagerComponent.h"
 #include "StaticHelper.h"
+#include "AbilityBase.h"
 
 void USpellTask::InitializeAllFloatParameters()
 {
@@ -18,13 +19,13 @@ void USpellTask::InitializeAllFloatParameters()
 
 void USpellTask::UnregisteringAllFloatParameters()
 {
-    if (Owner != nullptr)
+    if (GetOwner() != nullptr)
     {
         if (AllFloatParameters.Num() > 0)
         {
             for (auto& Param : AllFloatParameters)
             {
-                Owner->UnregisterFloatParameter(Param);
+                GetOwner()->UnregisterFloatParameter(Param);
             }
         }
     }
@@ -56,12 +57,22 @@ void USpellTask::PostInitProperties()
 
         RegisteringAllFloatParameters();
         InitializeAllFloatParameters();
+
+        if (GetAbilityOwner() != nullptr && CastCheckDelegate.IsBound())
+        {
+            GetAbilityOwner()->AddCheckCastDelegate(&CastCheckDelegate);
+        }
     }
 }
 
 void USpellTask::BeginDestroy()
 {
     Super::BeginDestroy();
+
+    if (GetAbilityOwner() != nullptr)
+    {
+        GetAbilityOwner()->RemoveCheckCastDelegate(&CastCheckDelegate);
+    }
 
     UnregisteringAllFloatParameters();
 }
