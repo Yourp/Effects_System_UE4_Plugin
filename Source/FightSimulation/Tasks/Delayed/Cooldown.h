@@ -24,6 +24,8 @@ protected:
 
 public:
 
+    UCooldown();
+
     DECLARE_MULTICAST_DELEGATE_OneParam(FOnCooldownExpired, UCooldown const*);
 
     virtual void Run(USpellCastManagerComponent* Target, USpellCastData* CastData) override;

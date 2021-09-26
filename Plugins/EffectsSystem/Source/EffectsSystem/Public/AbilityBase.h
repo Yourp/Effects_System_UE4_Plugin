@@ -23,7 +23,8 @@ public:
 
     virtual void CastSpellTo(USpellCastManagerComponent* Target);
 
-    void AddCheckCastDelegate(FAbilityCastCheck& CheckDelegate);
+    void AddCheckCastDelegate   (FAbilityCastCheck* CheckDelegate);
+    void RemoveCheckCastDelegate(FAbilityCastCheck* CheckDelegate);
 
     uint64 IsCantCast() const;
 
@@ -37,5 +38,5 @@ private:
     UPROPERTY(EditAnywhere, Instanced)
     TArray<USpellTask*> SpellTasks;
 
-    TArray<FAbilityCastCheck> CastChecks;
+    TArray<FAbilityCastCheck*> CastChecks;
 };

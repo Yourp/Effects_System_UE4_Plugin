@@ -6,6 +6,11 @@
 #include "EffectsSystemHelpMacros.h"
 #include "FightSimulation/Abilities/FighterAbility.h"
 
+UCooldown::UCooldown() : Super()
+{
+    CastCheckDelegate.BindUObject(this, &UCooldown::IsHasCooldown);
+}
+
 void UCooldown::CooldownExpired()
 {
     OnCooldownExpiredDelegate.Broadcast(this);
@@ -44,8 +49,6 @@ float UCooldown::GetCooldownTime() const
 void UCooldown::PostInitProperties()
 {
     Super::PostInitProperties();
-
-    INITIALIZE_CHECK_CAST_DELEGATE(&UCooldown::IsHasCooldown);
 
     if (UFighterAbility* Ability = Cast<UFighterAbility>(GetAbilityOwner()))
     {

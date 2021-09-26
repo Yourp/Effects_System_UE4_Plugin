@@ -47,12 +47,6 @@ FORCEINLINE void Modify##VarName##Instant(float Amount)                         
     VarName += Amount;                                                          \
 }                                                                               \
 
-#define INITIALIZE_CHECK_CAST_DELEGATE(FUNC)                    \
-if (GetAbilityOwner())                                          \
-{                                                               \
-    UAbilityBase::FAbilityCastCheck CheckDelegate;              \
-    CheckDelegate.BindUObject(this, FUNC);                      \
-    GetAbilityOwner()->AddCheckCastDelegate(CheckDelegate);     \
-}                                                               \
+
 
 

@@ -21,10 +21,14 @@ class EFFECTSSYSTEM_API USpellTask : public UObject
 
 protected:
 
+    DECLARE_DELEGATE_RetVal(uint64, FAbilityCastCheck);
+
     virtual void InitializeAllFloatParameters();
 
     virtual void RegisteringAllFloatParameters() {}
     virtual void UnregisteringAllFloatParameters();
+
+    FAbilityCastCheck CastCheckDelegate;
 
     UPROPERTY(EditAnywhere, Instanced, Category = "==========================================================================")
     TArray<USpellTask*> NextTasks;

@@ -16,22 +16,27 @@ void UAbilityBase::CastSpellTo(USpellCastManagerComponent* Target)
     USpellTask::RunTaskList(SpellTasks, Target, NewData);
 }
 
-void UAbilityBase::AddCheckCastDelegate(FAbilityCastCheck& CheckDelegate)
+void UAbilityBase::AddCheckCastDelegate(FAbilityCastCheck* CheckDelegate)
 {
-    if (CheckDelegate.IsBound())
+    if (CheckDelegate->IsBound())
     {
-        CastChecks.Add(CheckDelegate);
+        CastChecks.AddUnique(CheckDelegate);
     }
+}
+
+void UAbilityBase::RemoveCheckCastDelegate(FAbilityCastCheck* CheckDelegate)
+{
+    CastChecks.RemoveSwap(CheckDelegate);
 }
 
 uint64 UAbilityBase::IsCantCast() const
 {
-    for (auto& Checker : CastChecks)
+    for (FAbilityCastCheck const* Checker : CastChecks)
     {
-        if (Checker.IsBound())
+        if (Checker->IsBound())
         {
             /** TODO: Warning */
-            uint64 Reason = Checker.Execute();
+            uint64 Reason = Checker->Execute();
 
             if (Reason != 0)
             {
