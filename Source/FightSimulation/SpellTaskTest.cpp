@@ -5,7 +5,7 @@
 #include "Kismet\GameplayStatics.h"
 #include "TestCastData.h"
 #include "Caster.h"
-#include "SpellCastManagerComponent.h"
+#include "Units/Components/FightManagerComponent.h"
 
 USpellTaskTest::USpellTaskTest()
 {
@@ -19,7 +19,20 @@ void USpellTaskTest::PostInitProperties()
 
 void USpellTaskTest::Run(USpellCastManagerComponent* Target, USpellCastData* CastData)
 {
+    UFightManagerComponent* ttt = Cast<UFightManagerComponent>(CastData->GetCaster());
+
+    ttt->TestDelegate.AddUFunction(this, "TestDelegateFunct");
+    ttt->TestDelegate.AddUFunction(this, "TestDelegateFunct");
+    ttt->TestDelegate.AddUFunction(this, "TestDelegateFunct");
+    ttt->TestDelegate.AddUFunction(this, "TestDelegateFunct");
+    ttt->TestDelegate.AddUFunction(this, "TestDelegateFunct");
+
     FFloatParameter NewDamage;
     NewDamage.SetGameplayTag(DamageTag);
+}
+
+void USpellTaskTest::TestDelegateFunct(float ddd)
+{
+
 }
 

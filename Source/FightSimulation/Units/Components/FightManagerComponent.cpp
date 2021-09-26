@@ -8,6 +8,19 @@
 void UFightManagerComponent::InitializeFloatParameters()
 {
     INITIALIZE_FLOAT_PARAMETER(Health);
+    INITIALIZE_FLOAT_PARAMETER(SpellPower);
+    INITIALIZE_FLOAT_PARAMETER(Haste);
+}
+
+void UFightManagerComponent::TestFunc()
+{
+    TestDelegate.Broadcast(5);
+    
+}
+
+void UFightManagerComponent::TestDelegateFunc(float ddd)
+{
+
 }
 
 void UFightManagerComponent::BeginPlay()
@@ -24,6 +37,9 @@ void UFightManagerComponent::BeginPlay()
             SIZE_T ssss3 = this->GetOwner()->GetResourceSizeBytes(EResourceSizeMode::EstimatedTotal);
             Abilities.Add(NewAb);
 
+            FTimerHandle ttt;
+            GetWorld()->GetTimerManager().SetTimer(ttt, this, &UFightManagerComponent::TestFunc, 65);
+
             if (NewAb->IsCantCast())
                 continue;
 
@@ -31,6 +47,7 @@ void UFightManagerComponent::BeginPlay()
 
             if (NewAb->IsCantCast())
                 continue;
+
         }
     }
 }

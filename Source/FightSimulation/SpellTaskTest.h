@@ -31,4 +31,7 @@ public:
     virtual void PostInitProperties() override;
 
     void Run(USpellCastManagerComponent* Target, USpellCastData* CastData) override;
+
+    UFUNCTION()
+    void TestDelegateFunct(float ddd);
 };
