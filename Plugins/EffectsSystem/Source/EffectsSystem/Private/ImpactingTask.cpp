@@ -7,16 +7,28 @@ void UImpactingTask::Run(USpellCastManagerComponent* Target, USpellCastData* Cas
 {
     check(Target);
 
-    float CurrentValue = ModValue;
+    float CurrentValue = GetCalculatedValue(Target, CastData);
 
-    if (ModsTag.IsValid())
-    {
-        Target->ApplyAllModsTo(CurrentValue, ModsTag);
-    }
-
-    Target->Impacting(CurrentValue, AffectingTag, AffectingType);
+    AffectToTarget(Target, CurrentValue);
 
     USpellTask::RunTaskList(NextTasks, Target, CastData);
+}
+
+float UImpactingTask::GetCalculatedValue(USpellCastManagerComponent* Target, USpellCastData* CastData)
+{
+    float CurrentValue = ModValue;
+
+    if (TagForTargetMods.IsValid())
+    {
+        Target->ApplyAllModsTo(CurrentValue, TagForTargetMods);
+    }
+
+    return CurrentValue;
+}
+
+void UImpactingTask::AffectToTarget(USpellCastManagerComponent* Target, float Amount)
+{
+    Target->Impacting(Amount, AffectingTag, AffectingType);
 }
 
 void UImpactingTask::RegisteringAllFloatParameters()

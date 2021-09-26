@@ -19,6 +19,10 @@ public:
 
     virtual void Run(USpellCastManagerComponent* Target, USpellCastData* CastData) override;
 
+    virtual float GetCalculatedValue(USpellCastManagerComponent* Target, USpellCastData* CastData);
+
+    virtual void AffectToTarget(USpellCastManagerComponent* Target, float Amount);
+
     virtual void RegisteringAllFloatParameters() override;
 
 private:
@@ -30,7 +34,7 @@ private:
     FGameplayTagContainer AffectingTag;
 
     UPROPERTY(EditAnywhere)
-    FGameplayTag ModsTag;
+    FGameplayTag TagForTargetMods;
 
     UPROPERTY(EditAnywhere)
     TEnumAsByte<EAffectingType> AffectingType;
