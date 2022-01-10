@@ -27,7 +27,7 @@ uint64 UCooldown::IsHasCooldown() const
     UWorld* World = GetWorld();
     check(World);
 
-    return World->GetTimerManager().IsTimerPending(CooldownTimer);
+    return World->GetTimerManager().TimerExists(CooldownTimer);
 }
 
 void UCooldown::SetCooldown(float NewCooldown)
@@ -56,7 +56,7 @@ void UCooldown::PostInitProperties()
     }
 }
 
-void UCooldown::RegisteringAllFloatParameters()
+void UCooldown::FillInParameters()
 {
-    RegisterFloatParameter(&RecoveryTime);
+    AddFloatParameter(&RecoveryTime);
 }

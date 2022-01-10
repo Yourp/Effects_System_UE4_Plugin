@@ -20,9 +20,13 @@ bool USpellCastManagerComponent::ReplicateSubobjects(UActorChannel *Channel, FOu
 {
     bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
 
-    for (auto& Itr : AppliedEffects)
+    if (AppliedEffects.Num())
     {
-        bWroteSomething |= Channel->ReplicateSubobject(Itr, *Bunch, *RepFlags);
+        for (USpellEffect* CurrentEffect : AppliedEffects)
+        {
+            bWroteSomething |= Channel->ReplicateSubobject(CurrentEffect, *Bunch, *RepFlags);
+            bWroteSomething |= CurrentEffect->ReplicateSubobjects(Channel, Bunch, RepFlags);
+        }
     }
 
     return bWroteSomething;
@@ -31,6 +35,13 @@ bool USpellCastManagerComponent::ReplicateSubobjects(UActorChannel *Channel, FOu
 void USpellCastManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(USpellCastManagerComponent, AppliedEffects);
+}
+
+void USpellCastManagerComponent::OnRep_AppliedEffects(TArray<USpellEffect*> Old)
+{
+
 }
 
 // Called when the game starts
@@ -53,6 +64,8 @@ void USpellCastManagerComponent::RegisterFloatParameter(FFloatParameter* NewPara
 
 void USpellCastManagerComponent::UnregisterFloatParameter(FFloatParameter* NewParamPtr)
 {
+    NewParamPtr->RemoveAllMods();
+
     AllFloatParameters.RemoveSwap(NewParamPtr);
     AllParametersWithTags.RemoveSwap(NewParamPtr);
 }
@@ -64,7 +77,7 @@ void USpellCastManagerComponent::ApplyEffect_Implementation(USpellCastManagerCom
         return;
     }
 
-    Effect->Apply(this); 
+    Effect->ApplyingTo(this); 
 }
 
 void USpellCastManagerComponent::RemoveEffect_Implementation(USpellEffect* Effect)
@@ -115,6 +128,20 @@ void USpellCastManagerComponent::ApplyAllModsTo(float& Amount, FGameplayTag cons
 {
     Amount += GetModifierFor   (AmountName);
     Amount *= GetMultiplayerFor(AmountName);
+}
+
+void USpellCastManagerComponent::ApplyAllModsTo(FFloatParameter* Param)
+{
+    if (Param->GetGameplayTag().IsValid())
+    {
+        for (USpellEffect* Effect : GetAppliedEffects())
+        {
+            if (!Effect->GetAffectingTag().IsEmpty() && Param->GetGameplayTag().MatchesAny(Effect->GetAffectingTag()))
+            {
+                Effect->ApplyToParameter(Param);
+            }
+        }
+    }
 }
 
 float USpellCastManagerComponent::GetModifierFor(FGameplayTag const& Tag) const
@@ -173,7 +200,7 @@ void USpellCastManagerComponent::RegisteringAppliedEffect(USpellEffect* Effect)
 {
     if (Effect)
     {
-        AppliedEffects.Add(Effect);
+        AppliedEffects.AddUnique(Effect);
     }
 }
 
@@ -187,6 +214,10 @@ TArray<FFloatParameter*> const& USpellCastManagerComponent::GetAllParametersWith
     return AllParametersWithTags;
 }
 
+TArray<USpellEffect*> const& USpellCastManagerComponent::GetAppliedEffects() const
+{
+    return AppliedEffects;
+}
 
 
 

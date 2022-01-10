@@ -20,7 +20,7 @@ protected:
 
     virtual void CooldownExpired();
 
-    virtual void RegisteringAllFloatParameters() override;
+    virtual void FillInParameters() override;
 
 public:
 

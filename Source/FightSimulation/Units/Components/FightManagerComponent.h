@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "SpellCastManagerComponent.h"
-#include "SpellEffect.h"
-#include "FightSimulation/SpellTaskTest.h"
+#include "../../Abilities/Effects/LimitedResources.h"
 #include "FightManagerComponent.generated.h"
 
 class UAbilityBase;
+// class ULimitedResources;
+// class USpellEffect;
 
 /**
  * 
@@ -18,42 +19,61 @@ class FIGHTSIMULATION_API UFightManagerComponent : public USpellCastManagerCompo
 {
     GENERATED_BODY()
 
-    DECLARE_GETTERS_AND_SETTERS_OF_FLOAT_PARAMETER(Health);
-    DECLARE_GETTERS_AND_SETTERS_OF_FLOAT_PARAMETER(SpellPower);
-    DECLARE_GETTERS_AND_SETTERS_OF_FLOAT_PARAMETER(Haste);
-
-    virtual void InitializeFloatParameters() override;
-
-    
 
 public:
+
+    UFightManagerComponent();
 
     DECLARE_MULTICAST_DELEGATE_OneParam(FTestDelegateSSS, float)
 
     FTestDelegateSSS TestDelegate;
 
     void TestFunc();
-    void TestDelegateFunc(float ddd);
+    void TestDelegateFunc();
 
-    UPROPERTY(EditAnywhere)
-    TSubclassOf<USpellEffect> TestEff;
+    float GetHealthPct() const;
 
     virtual void BeginPlay() override;
 
+    virtual void PreReplication(IRepChangedPropertyTracker & ChangedPropertyTracker);
+
+    virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
+
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+    virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
+
 private:
 
-    UPROPERTY(EditAnywhere)
-    FFloatParameter Health;
+    UPROPERTY(EditAnywhere, Instanced)
+    ULimitedResources* Health;
 
-    UPROPERTY(EditAnywhere)
-    FFloatParameter SpellPower;
+    UPROPERTY(EditAnywhere, Instanced)
+    ULimitedResources* Energy;
 
-    UPROPERTY(EditAnywhere)
-    FFloatParameter Haste;
+    UPROPERTY(EditAnywhere, Instanced)
+    USpellEffect* SpellPower;
+
+    UPROPERTY(EditAnywhere, Instanced)
+    USpellEffect* Haste;
+
+    UPROPERTY(EditAnywhere, Instanced)
+    USpellEffect* CritChance;
+
+    UPROPERTY(EditAnywhere, Instanced)
+    USpellEffect* CritMultiplying;
 
     UPROPERTY(EditAnywhere)
     TArray<TSubclassOf<UAbilityBase>> AbilitiesDefault;
 
-    UPROPERTY()
+    UPROPERTY(ReplicatedUsing = OnRep_Abilities)
     TArray<UAbilityBase*> Abilities;
+
+    UFUNCTION(NetMulticast, Reliable)
+    void EmptyTest();
+
+protected:
+
+    UFUNCTION()
+    virtual void OnRep_Abilities(TArray<UAbilityBase*> OldAbilities);
 };

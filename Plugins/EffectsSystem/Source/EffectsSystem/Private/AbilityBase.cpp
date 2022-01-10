@@ -4,8 +4,10 @@
 #include "AbilityBase.h"
 #include "SpellCastManagerComponent.h"
 #include "SpellCastData.h"
+#include "Net/UnrealNetwork.h"
+#include "Engine/ActorChannel.h"
 
-void UAbilityBase::CastSpellTo(USpellCastManagerComponent* Target)
+void UAbilityBase::CastTo(USpellCastManagerComponent* Target)
 {
     USpellCastManagerComponent* Caster = Cast<USpellCastManagerComponent>(GetOuter());
     check(Caster);
@@ -45,6 +47,46 @@ uint64 UAbilityBase::IsCantCast() const
         }
     }
     return 0;
+}
+
+void UAbilityBase::BeginPlay()
+{
+    Super::BeginPlay();
+
+    if (GetOwnerRole() == ROLE_Authority)
+    {
+        for (USpellTask* Task : SpellTasks)
+        {
+            if (!Task->HasBegunPlay())
+            {
+                Task->BeginPlay();
+            }
+        }
+    }
+}
+
+void UAbilityBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty> & OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    //DOREPLIFETIME(UAbilityBase, SpellTasks);
+
+}
+
+bool UAbilityBase::ReplicateSubobjects(UActorChannel *Channel, FOutBunch *Bunch, FReplicationFlags *RepFlags)
+{
+    bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+    if (SpellTasks.Num())
+    {
+        for (USpellTask* CurrentTask : SpellTasks)
+        {
+            bWroteSomething |= Channel->ReplicateSubobject(CurrentTask, *Bunch, *RepFlags);
+            bWroteSomething |= CurrentTask->ReplicateSubobjects(Channel, Bunch, RepFlags);
+        }
+    }
+
+    return bWroteSomething;
 }
 
 USpellCastData* UAbilityBase::CreateSpellCastData()

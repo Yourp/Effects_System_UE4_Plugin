@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "ReplicatedObject.h"
 #include "FloatParameter.h"
 #include "SpellTask.generated.h"
 
@@ -15,7 +14,7 @@ class UAbilityBase;
  * 
  */
 UCLASS(BlueprintType, DefaultToInstanced, editinlinenew)
-class EFFECTSSYSTEM_API USpellTask : public UObject
+class EFFECTSSYSTEM_API USpellTask : public UReplicatedObject
 {
     GENERATED_BODY()
 
@@ -23,10 +22,18 @@ protected:
 
     DECLARE_DELEGATE_RetVal(uint64, FAbilityCastCheck);
 
-    virtual void InitializeAllFloatParameters();
-
-    virtual void RegisteringAllFloatParameters() {}
+    virtual void FillInParameters() {}
     virtual void UnregisteringAllFloatParameters();
+    virtual void RegisteringAllParametersForOwner();
+
+    UFUNCTION()
+    virtual void OnRep_ActorOwner();
+
+    UFUNCTION()
+    virtual void OnRep_ComponentOwner();
+
+    UFUNCTION()
+    virtual void OnRep_AbilityOwner();
 
     FAbilityCastCheck CastCheckDelegate;
 
@@ -35,13 +42,13 @@ protected:
 
 private:
 
-    UPROPERTY()
+    UPROPERTY(ReplicatedUsing = OnRep_ActorOwner)
     AActor* ActorOwner;
 
-    UPROPERTY()
-    USpellCastManagerComponent* Owner;
+    UPROPERTY(ReplicatedUsing = OnRep_ComponentOwner)
+    USpellCastManagerComponent* ComponentOwner;
 
-    UPROPERTY()
+    UPROPERTY(ReplicatedUsing = OnRep_AbilityOwner)
     UAbilityBase* AbilityOwner;
 
     TArray<FFloatParameter*> AllFloatParameters;
@@ -52,28 +59,32 @@ public:
 
     virtual void Run(USpellCastManagerComponent* Target, USpellCastData* CastData);
 
-    virtual void PostInitProperties() override;
+    virtual void BeginPlay() override;
 
     virtual void BeginDestroy() override;
 
+    virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
+
     static void RunTaskList(TArray<USpellTask*> const& TaskList, USpellCastManagerComponent* Target, USpellCastData* CastData);
 
-    void RegisterFloatParameter(FFloatParameter* NewParam);
+    void AddFloatParameter(FFloatParameter* NewParam);
 
     FORCEINLINE AActor* GetActorOwner() const
     {
         return ActorOwner;
     }
 
-    FORCEINLINE USpellCastManagerComponent* GetOwner() const
+    FORCEINLINE USpellCastManagerComponent* GetComponentOwner() const
     {
-        return Owner;
+        return ComponentOwner;
     }
 
     FORCEINLINE UAbilityBase* GetAbilityOwner() const
     {
         return AbilityOwner;
     }
+
+    virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty> & OutLifetimeProps) const override;
 };
 
 

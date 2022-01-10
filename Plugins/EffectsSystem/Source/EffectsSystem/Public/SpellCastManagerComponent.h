@@ -33,7 +33,9 @@ public:
     FFloatParameter* FindFirstParameterByTag(FGameplayTag const& Tag);
 
     void Impacting(float Amount, FGameplayTagContainer const& ImpactTag, enum EAffectingType Type);
+
     void ApplyAllModsTo(float& Amount, FGameplayTag const& AmountName);
+    void ApplyAllModsTo(FFloatParameter* Param);
     float GetModifierFor   (FGameplayTag const& Tag) const;
     float GetMultiplayerFor(FGameplayTag const& Tag) const;
 
@@ -48,15 +50,19 @@ public:
 
     TArray<FFloatParameter*> const& GetAllParametersWithTags() const;
 
+    TArray<USpellEffect*> const& GetAppliedEffects() const;
+
     virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
+
+    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
 
     
+    UFUNCTION()
+    virtual void OnRep_AppliedEffects(TArray<USpellEffect*> Old);
 
-    
-
-	// Called when the game starts
+	/** Called when the game starts. */
 	virtual void BeginPlay() override;
 
 private:
@@ -65,12 +71,12 @@ private:
 
     TArray<FFloatParameter*> AllParametersWithTags;
 
-    UPROPERTY()
+    UPROPERTY(ReplicatedUsing = OnRep_AppliedEffects)
     TArray<USpellEffect*> AppliedEffects;
 
     virtual void InitializeFloatParameters() {}
 
-    virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 
 private:
 

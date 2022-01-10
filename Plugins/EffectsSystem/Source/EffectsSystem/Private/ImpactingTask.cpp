@@ -2,6 +2,7 @@
 
 
 #include "ImpactingTask.h"
+#include "Net/UnrealNetwork.h"
 
 void UImpactingTask::Run(USpellCastManagerComponent* Target, USpellCastData* CastData)
 {
@@ -31,7 +32,19 @@ void UImpactingTask::AffectToTarget(USpellCastManagerComponent* Target, float Am
     Target->Impacting(Amount, AffectingTag, AffectingType);
 }
 
-void UImpactingTask::RegisteringAllFloatParameters()
+void UImpactingTask::FillInParameters()
 {
-    RegisterFloatParameter(&ModValue);
+    AddFloatParameter(&ModValue);
+}
+
+void UImpactingTask::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty> & OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(UImpactingTask, ModValue);
+}
+
+void UImpactingTask::OnRep_ModValue(FFloatParameter const& OldValue)
+{
+
 }

@@ -5,30 +5,45 @@
 #include "SpellCastManagerComponent.h"
 #include "StaticHelper.h"
 #include "AbilityBase.h"
+#include "Net/UnrealNetwork.h"
+#include "Engine/ActorChannel.h"
 
-void USpellTask::InitializeAllFloatParameters()
+void USpellTask::UnregisteringAllFloatParameters()
 {
-    if (AllFloatParameters.Num() > 0)
+    if (GetComponentOwner() != nullptr)
     {
-        for (auto& Param : AllFloatParameters)
+        while (AllFloatParameters.Num())
         {
-            Param->Initialize();
+            FFloatParameter* Param = *AllFloatParameters.GetData();
+            GetComponentOwner()->UnregisterFloatParameter(Param);
+            AllFloatParameters.RemoveSwap(Param);
         }
     }
 }
 
-void USpellTask::UnregisteringAllFloatParameters()
+void USpellTask::RegisteringAllParametersForOwner()
 {
-    if (GetOwner() != nullptr)
+    for (FFloatParameter* Param : AllFloatParameters)
     {
-        if (AllFloatParameters.Num() > 0)
-        {
-            for (auto& Param : AllFloatParameters)
-            {
-                GetOwner()->UnregisterFloatParameter(Param);
-            }
-        }
+        Param->Initialize();
+        ComponentOwner->ApplyAllModsTo(Param);
+        ComponentOwner->RegisterFloatParameter(Param);
     }
+}
+
+void USpellTask::OnRep_ActorOwner()
+{
+
+}
+
+void USpellTask::OnRep_ComponentOwner()
+{
+
+}
+
+void USpellTask::OnRep_AbilityOwner()
+{
+
 }
 
 USpellTask::~USpellTask()
@@ -43,20 +58,28 @@ void USpellTask::Run(USpellCastManagerComponent* Target, USpellCastData* CastDat
     RunTaskList(NextTasks, Target, CastData);
 }
 
-void USpellTask::PostInitProperties()
+void USpellTask::BeginPlay()
 {
-    Super::PostInitProperties();
+    Super::BeginPlay();
 
-    if (GetWorld())
+    if (GetOwnerRole() == ROLE_Authority)
     {
-        Owner        = FStaticHelper::FindFirstOuterByClass<USpellCastManagerComponent>(this);
-        AbilityOwner = FStaticHelper::FindFirstOuterByClass<UAbilityBase              >(this);
-        ActorOwner   = FStaticHelper::FindFirstOuterByClass<AActor                    >(this);
+        for (USpellTask* Task : NextTasks)
+        {
+            if (!Task->HasBegunPlay())
+            {
+                Task->BeginPlay();
+            }
+        }
 
-        check(Owner);
+        ComponentOwner  = FStaticHelper::FindFirstOuterByClass<USpellCastManagerComponent>(this);
+        AbilityOwner    = FStaticHelper::FindFirstOuterByClass<UAbilityBase              >(this);
+        ActorOwner      = FStaticHelper::FindFirstOuterByClass<AActor                    >(this);
 
-        RegisteringAllFloatParameters();
-        InitializeAllFloatParameters();
+        check(ComponentOwner);
+
+        FillInParameters();
+        RegisteringAllParametersForOwner();
 
         if (GetAbilityOwner() != nullptr && CastCheckDelegate.IsBound())
         {
@@ -77,22 +100,43 @@ void USpellTask::BeginDestroy()
     UnregisteringAllFloatParameters();
 }
 
+bool USpellTask::ReplicateSubobjects(UActorChannel *Channel, FOutBunch *Bunch, FReplicationFlags *RepFlags)
+{
+    bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+    if (NextTasks.Num())
+    {
+        for (USpellTask* CurrentTask : NextTasks)
+        {
+            bWroteSomething |= Channel->ReplicateSubobject(CurrentTask, *Bunch, *RepFlags);
+            bWroteSomething |= CurrentTask->ReplicateSubobjects(Channel, Bunch, RepFlags);
+        }
+    }
+
+    return bWroteSomething;
+}
+
 void USpellTask::RunTaskList(TArray<USpellTask*> const& TaskList, USpellCastManagerComponent* Target, USpellCastData* CastData)
 {
-    if (TaskList.Num() > 0)
+    for (USpellTask* CurrentTask : TaskList)
     {
-        for (auto& CurrentTask : TaskList)
+        if (CurrentTask != nullptr)
         {
-            if (CurrentTask != nullptr)
-            {
-                CurrentTask->Run(Target, CastData);
-            }
+            CurrentTask->Run(Target, CastData);
         }
     }
 }
 
-void USpellTask::RegisterFloatParameter(FFloatParameter* NewParam)
+void USpellTask::AddFloatParameter(FFloatParameter* NewParam)
 {
     AllFloatParameters.AddUnique(NewParam);
-    Owner->RegisterFloatParameter(NewParam);
+}
+
+void USpellTask::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty> & OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(USpellTask,     ActorOwner);
+    DOREPLIFETIME(USpellTask, ComponentOwner);
+    DOREPLIFETIME(USpellTask,   AbilityOwner);
 }

@@ -2,16 +2,16 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "ReplicatedObject.h"
 #include "SpellTask.h"
+#include "SpellEffect.h"
 #include "AbilityBase.generated.h"
 
 /**
  * 
  */
 UCLASS(Abstract, Blueprintable)
-class EFFECTSSYSTEM_API UAbilityBase : public UObject
+class EFFECTSSYSTEM_API UAbilityBase : public UReplicatedObject
 {
 	GENERATED_BODY()
 	
@@ -21,12 +21,19 @@ public:
 
     DECLARE_DELEGATE_RetVal(uint64, FAbilityCastCheck);
 
-    virtual void CastSpellTo(USpellCastManagerComponent* Target);
+    virtual void CastTo(USpellCastManagerComponent* Target);
 
     void AddCheckCastDelegate   (FAbilityCastCheck* CheckDelegate);
     void RemoveCheckCastDelegate(FAbilityCastCheck* CheckDelegate);
 
     uint64 IsCantCast() const;
+
+    virtual void BeginPlay() override;
+
+    virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty> & OutLifetimeProps) const override;
+
+    virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
+
 
 private:
 

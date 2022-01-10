@@ -23,11 +23,13 @@ public:
 
     virtual void AffectToTarget(USpellCastManagerComponent* Target, float Amount);
 
-    virtual void RegisteringAllFloatParameters() override;
+    virtual void FillInParameters() override;
+
+    virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty> & OutLifetimeProps) const;
 
 private:
 
-    UPROPERTY(EditAnywhere)
+    UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_ModValue)
     FFloatParameter ModValue;
 
     UPROPERTY(EditAnywhere)
@@ -38,4 +40,9 @@ private:
 
     UPROPERTY(EditAnywhere)
     TEnumAsByte<EAffectingType> AffectingType;
+
+protected:
+
+    UFUNCTION()
+    virtual void OnRep_ModValue(FFloatParameter const& OldValue);
 };

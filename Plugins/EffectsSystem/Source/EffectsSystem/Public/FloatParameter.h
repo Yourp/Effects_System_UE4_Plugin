@@ -8,8 +8,6 @@
 
 class USpellCastManagerComponent;
 class USpellEffect;
-struct FAffectingInfo;
-struct FFloatParameter;
 
 UENUM()
 enum EAffectingType
@@ -24,22 +22,25 @@ struct EFFECTSSYSTEM_API FFloatParameter
 {
     GENERATED_BODY()
 
-    DECLARE_MULTICAST_DELEGATE_OneParam(FAfterChange, float);
+    DECLARE_DELEGATE_OneParam          (FOnChange,    float&);
+    DECLARE_MULTICAST_DELEGATE_OneParam(FAfterChange, float );
 
 private:
 
     UPROPERTY()
     float Value;
 
-    UPROPERTY(NotReplicated, EditDefaultsOnly)
+    UPROPERTY(NotReplicated, EditAnywhere)
     float BaseValue;
 
-    UPROPERTY(NotReplicated, EditDefaultsOnly)
+    UPROPERTY(NotReplicated, EditAnywhere)
     FGameplayTag ParameterName;
 
-    TArray<USpellEffect const*> AddingEffects;
-    TArray<USpellEffect const*> TotalMultiplyingEffects;
-    TArray<USpellEffect const*> TotalMultiplyingEffectsNotStack;
+    UPROPERTY(NotReplicated)
+    uint8 bIsInitialized : 1;
+
+    TArray<USpellEffect*> AddingEffects;
+    TArray<USpellEffect*> TotalMultiplyingEffects;
     
     UPROPERTY()
     float Adding;
@@ -47,21 +48,16 @@ private:
     UPROPERTY()
     float Multiplying;
 
+    FOnChange    OnChangeDelegate;
     FAfterChange AfterChangeDelegate;
 
-    void UpdateMultiplyingValue();
-    void UpdateAddingValue();
-
-    FORCEINLINE void Recalculate()
-    {
-        Value = Calculate(BaseValue, Adding, Multiplying);
-    }
+    void ClearListOfMods(TArray<USpellEffect*>& List);
 
 public:
 
-    FFloatParameter() : Multiplying(1.f) {}
+    FFloatParameter() : bIsInitialized(false), Multiplying(1.f) {}
 
-    FORCEINLINE void Initialize() { Value = BaseValue; }
+    void Initialize();
 
     FORCEINLINE const FGameplayTag& GetGameplayTag() const { return ParameterName; }
 
@@ -78,27 +74,40 @@ public:
 
     void SetValue(float NewValue);
 
+    void RemoveAllMods();
+
+    void UpdateMultiplyingValue();
+    void UpdateAddingValue();
+
+    void Recalculate();
 
     void SetGameplayTag(const FGameplayTag& NewTag) { ParameterName = NewTag; }
 
+    FORCEINLINE FOnChange&    GetOnChangeDelegate()    { return    OnChangeDelegate; };
     FORCEINLINE FAfterChange& GetAfterChangeDelegate() { return AfterChangeDelegate; };
 
     static float Calculate(float Base, float Add, float Multiply);
 
-    FORCEINLINE bool operator >  (float Val) const { return Value >  Val; }
-    FORCEINLINE bool operator == (float Val) const { return Value == Val; }
-    FORCEINLINE bool operator <  (float Val) const { return Value <  Val; }
-    FORCEINLINE void operator =  (float Val)       {        Value =  Val; }
-    FORCEINLINE void operator -= (float Val)       {        Value -= Val; }
-    FORCEINLINE void operator /= (float Val)       {        Value /= Val; }
+    FORCEINLINE bool operator >  (float Val) const {  return Value >  Val;  }
+    FORCEINLINE bool operator == (float Val) const {  return Value == Val;  }
+    FORCEINLINE bool operator <  (float Val) const {  return Value <  Val;  }
 
     FORCEINLINE operator float () const { return Value; }
 
+    void operator  = (float Val);
     void operator += (float Val);
     void operator *= (float Val);
 
-    void operator += (USpellEffect const* Effect);
-    void operator -= (USpellEffect const* Effect);
+    void operator += (USpellEffect* Effect);
+    void operator -= (USpellEffect* Effect);
+
+    void operator = (FFloatParameter const& Template)
+    {
+        Value           = Template.Value;
+        BaseValue       = Template.BaseValue;
+        ParameterName   = Template.ParameterName;
+        bIsInitialized  = Template.bIsInitialized;
+    }
 };
 
 

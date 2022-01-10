@@ -29,5 +29,6 @@ public:
 
 private:
 
+    UPROPERTY()
     UCooldown* CooldownTaskPtr;
 };
