@@ -6,7 +6,7 @@
 #include "Misc/AutomationTest.h"
 #include "../Public/FloatParameter.h"
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FFloatParameterInitializationTest, "EffectSystem.FloatParameter.Initialization",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FFloatParameterInitializationTest, "EffectSystem.FloatParameter",
                                  EAutomationTestFlags::ApplicationContextMask |
                                  EAutomationTestFlags::ProductFilter |
                                  EAutomationTestFlags::HighPriority);
@@ -15,24 +15,48 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FFloatParameterInitializationTest, "EffectSyste
 bool FFloatParameterInitializationTest::RunTest(const FString& Parameters)
 {
     FFloatParameter TestParameter;
-    float TestValue = 1000.f;
 
-    AddInfo("Checking initialization...");
+    AddInfo("FFloatParameter: Initialization...");
+    {
+        TestParameter.SetBaseValue(1000.f);
+        TestParameter.Initialize();
+        TestTrueExpr(TestParameter.GetValue() == 1000.f);
+    }
 
-    TestParameter.SetBaseValue(TestValue);
-    TestParameter.Initialize();
-    TestTrueExpr(TestParameter.GetValue() == TestValue);
+    AddInfo("FFloatParameter: GetBaseValue after SetValue...");
+    {
+        TestParameter.SetValue(500.f);
+        TestTrueExpr(TestParameter.GetBaseValue() == 1000.f);
+    }
 
-    AddInfo("Checking mod of base value...");
+    AddInfo("FFloatParameter: GetValue and GetBaseValue after repeated initialization...");
+    {
+        TestParameter.Initialize();
+        TestTrueExpr(TestParameter.GetValue()     ==  500.f);
+        TestTrueExpr(TestParameter.GetBaseValue() == 1000.f);
+    }
+    
+    AddInfo("FFloatParameter: += operator...");
+    {
+        TestParameter += 100.f;
+        TestTrueExpr(TestParameter.GetValue()     ==  600.f);
+        TestTrueExpr(TestParameter.GetBaseValue() == 1100.f);
 
-    TestParameter.SetValue(TestValue / 2.f);
-    TestTrueExpr(TestParameter.GetBaseValue() == TestValue);
+        TestParameter += -100.f;
+        TestTrueExpr(TestParameter.GetValue()     ==  500.f);
+        TestTrueExpr(TestParameter.GetBaseValue() == 1000.f);
+    }
 
-    AddInfo("Repeated initialization and values check...");
-
-    TestParameter.Initialize();
-    TestTrueExpr(TestParameter.GetValue() == (TestValue / 2.f));
-    TestTrueExpr(TestParameter.GetBaseValue() == TestValue);
+    AddInfo("FFloatParameter: *= operator...");
+    {
+        TestParameter *= 0.5f;
+        TestTrueExpr(TestParameter.GetValue()     == 250.f);
+        TestTrueExpr(TestParameter.GetBaseValue() == 500.f);
+    }
 
     return true;
 }
+
+
+
+
